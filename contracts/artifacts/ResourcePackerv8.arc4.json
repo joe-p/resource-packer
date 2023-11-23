@@ -18,6 +18,24 @@
       }
     },
     {
+      "name": "smallBox",
+      "args": [],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "mediumBox",
+      "args": [],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
       "name": "createApplication",
       "desc": "",
       "returns": {

@@ -40,12 +40,49 @@ abi_route_addressBalance:
 addressBalance:
 	proto 1 0
 
-	// contracts/resource-packer.algo.ts:8
+	// contracts/resource-packer.algo.ts:12
 	// assert(addr.balance)
 	frame_dig -1 // addr: address
 	acct_params_get AcctBalance
 	assert
 	assert
+	retsub
+
+// smallBox()void
+abi_route_smallBox:
+	// execute smallBox()void
+	callsub smallBox
+	int 1
+	return
+
+smallBox:
+	proto 0 0
+
+	// contracts/resource-packer.algo.ts:16
+	// this.smallBoxKey.value = ''
+	byte 0x73 // "s"
+	byte 0x73 // "s"
+	box_del
+	pop
+	byte 0x // ""
+	box_put
+	retsub
+
+// mediumBox()void
+abi_route_mediumBox:
+	// execute mediumBox()void
+	callsub mediumBox
+	int 1
+	return
+
+mediumBox:
+	proto 0 0
+
+	// contracts/resource-packer.algo.ts:20
+	// this.mediumBoxKey.create(5_000)
+	byte 0x6d // "m"
+	int 5_000
+	box_create
 	retsub
 
 abi_route_createApplication:
@@ -60,6 +97,8 @@ create_NoOp:
 
 call_NoOp:
 	method "addressBalance(address)void"
+	method "smallBox()void"
+	method "mediumBox()void"
 	txna ApplicationArgs 0
-	match abi_route_addressBalance
+	match abi_route_addressBalance abi_route_smallBox abi_route_mediumBox
 	err

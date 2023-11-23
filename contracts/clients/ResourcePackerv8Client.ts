@@ -31,6 +31,16 @@ export const APP_SPEC: AppSpec = {
         "no_op": "CALL"
       }
     },
+    "smallBox()void": {
+      "call_config": {
+        "no_op": "CALL"
+      }
+    },
+    "mediumBox()void": {
+      "call_config": {
+        "no_op": "CALL"
+      }
+    },
     "createApplication()void": {
       "call_config": {
         "no_op": "CREATE"
@@ -65,7 +75,7 @@ export const APP_SPEC: AppSpec = {
     }
   },
   "source": {
-    "approval": "I3ByYWdtYSB2ZXJzaW9uIDgKCi8vIFRoaXMgVEVBTCB3YXMgZ2VuZXJhdGVkIGJ5IFRFQUxTY3JpcHQgdjAuNjMuMAovLyBodHRwczovL2dpdGh1Yi5jb20vYWxnb3JhbmRmb3VuZGF0aW9uL1RFQUxTY3JpcHQKCi8vIFRoaXMgY29udHJhY3QgaXMgY29tcGxpYW50IHdpdGggYW5kL29yIGltcGxlbWVudHMgdGhlIGZvbGxvd2luZyBBUkNzOiBbIEFSQzQgXQoKLy8gVGhlIGZvbGxvd2luZyB0ZW4gbGluZXMgb2YgVEVBTCBoYW5kbGUgaW5pdGlhbCBwcm9ncmFtIGZsb3cKLy8gVGhpcyBwYXR0ZXJuIGlzIHVzZWQgdG8gbWFrZSBpdCBlYXN5IGZvciBhbnlvbmUgdG8gcGFyc2UgdGhlIHN0YXJ0IG9mIHRoZSBwcm9ncmFtIGFuZCBkZXRlcm1pbmUgaWYgYSBzcGVjaWZpYyBhY3Rpb24gaXMgYWxsb3dlZAovLyBIZXJlLCBhY3Rpb24gcmVmZXJzIHRvIHRoZSBPbkNvbXBsZXRlIGluIGNvbWJpbmF0aW9uIHdpdGggd2hldGhlciB0aGUgYXBwIGlzIGJlaW5nIGNyZWF0ZWQgb3IgY2FsbGVkCi8vIEV2ZXJ5IHBvc3NpYmxlIGFjdGlvbiBmb3IgdGhpcyBjb250cmFjdCBpcyByZXByZXNlbnRlZCBpbiB0aGUgc3dpdGNoIHN0YXRlbWVudAovLyBJZiB0aGUgYWN0aW9uIGlzIG5vdCBpbXBsbWVudGVkIGluIHRoZSBjb250cmFjdCwgaXRzIHJlcHNlY3RpdmUgYnJhbmNoIHdpbGwgYmUgIk5PVF9JTVBMTUVOVEVEIiB3aGljaCBqdXN0IGNvbnRhaW5zICJlcnIiCnR4biBBcHBsaWNhdGlvbklECmludCAwCj4KaW50IDYKKgp0eG4gT25Db21wbGV0aW9uCisKc3dpdGNoIGNyZWF0ZV9Ob09wIE5PVF9JTVBMRU1FTlRFRCBOT1RfSU1QTEVNRU5URUQgTk9UX0lNUExFTUVOVEVEIE5PVF9JTVBMRU1FTlRFRCBOT1RfSU1QTEVNRU5URUQgY2FsbF9Ob09wCgpOT1RfSU1QTEVNRU5URUQ6CgllcnIKCi8vIGFkZHJlc3NCYWxhbmNlKGFkZHJlc3Mpdm9pZAphYmlfcm91dGVfYWRkcmVzc0JhbGFuY2U6CgkvLyBhZGRyOiBhZGRyZXNzCgl0eG5hIEFwcGxpY2F0aW9uQXJncyAxCglkdXAKCWxlbgoJaW50IDMyCgk9PQoJYXNzZXJ0CgoJLy8gZXhlY3V0ZSBhZGRyZXNzQmFsYW5jZShhZGRyZXNzKXZvaWQKCWNhbGxzdWIgYWRkcmVzc0JhbGFuY2UKCWludCAxCglyZXR1cm4KCmFkZHJlc3NCYWxhbmNlOgoJcHJvdG8gMSAwCgoJLy8gY29udHJhY3RzL3Jlc291cmNlLXBhY2tlci5hbGdvLnRzOjgKCS8vIGFzc2VydChhZGRyLmJhbGFuY2UpCglmcmFtZV9kaWcgLTEgLy8gYWRkcjogYWRkcmVzcwoJYWNjdF9wYXJhbXNfZ2V0IEFjY3RCYWxhbmNlCglhc3NlcnQKCWFzc2VydAoJcmV0c3ViCgphYmlfcm91dGVfY3JlYXRlQXBwbGljYXRpb246CglpbnQgMQoJcmV0dXJuCgpjcmVhdGVfTm9PcDoKCW1ldGhvZCAiY3JlYXRlQXBwbGljYXRpb24oKXZvaWQiCgl0eG5hIEFwcGxpY2F0aW9uQXJncyAwCgltYXRjaCBhYmlfcm91dGVfY3JlYXRlQXBwbGljYXRpb24KCWVycgoKY2FsbF9Ob09wOgoJbWV0aG9kICJhZGRyZXNzQmFsYW5jZShhZGRyZXNzKXZvaWQiCgl0eG5hIEFwcGxpY2F0aW9uQXJncyAwCgltYXRjaCBhYmlfcm91dGVfYWRkcmVzc0JhbGFuY2UKCWVycg==",
+    "approval": "I3ByYWdtYSB2ZXJzaW9uIDgKCi8vIFRoaXMgVEVBTCB3YXMgZ2VuZXJhdGVkIGJ5IFRFQUxTY3JpcHQgdjAuNjMuMAovLyBodHRwczovL2dpdGh1Yi5jb20vYWxnb3JhbmRmb3VuZGF0aW9uL1RFQUxTY3JpcHQKCi8vIFRoaXMgY29udHJhY3QgaXMgY29tcGxpYW50IHdpdGggYW5kL29yIGltcGxlbWVudHMgdGhlIGZvbGxvd2luZyBBUkNzOiBbIEFSQzQgXQoKLy8gVGhlIGZvbGxvd2luZyB0ZW4gbGluZXMgb2YgVEVBTCBoYW5kbGUgaW5pdGlhbCBwcm9ncmFtIGZsb3cKLy8gVGhpcyBwYXR0ZXJuIGlzIHVzZWQgdG8gbWFrZSBpdCBlYXN5IGZvciBhbnlvbmUgdG8gcGFyc2UgdGhlIHN0YXJ0IG9mIHRoZSBwcm9ncmFtIGFuZCBkZXRlcm1pbmUgaWYgYSBzcGVjaWZpYyBhY3Rpb24gaXMgYWxsb3dlZAovLyBIZXJlLCBhY3Rpb24gcmVmZXJzIHRvIHRoZSBPbkNvbXBsZXRlIGluIGNvbWJpbmF0aW9uIHdpdGggd2hldGhlciB0aGUgYXBwIGlzIGJlaW5nIGNyZWF0ZWQgb3IgY2FsbGVkCi8vIEV2ZXJ5IHBvc3NpYmxlIGFjdGlvbiBmb3IgdGhpcyBjb250cmFjdCBpcyByZXByZXNlbnRlZCBpbiB0aGUgc3dpdGNoIHN0YXRlbWVudAovLyBJZiB0aGUgYWN0aW9uIGlzIG5vdCBpbXBsbWVudGVkIGluIHRoZSBjb250cmFjdCwgaXRzIHJlcHNlY3RpdmUgYnJhbmNoIHdpbGwgYmUgIk5PVF9JTVBMTUVOVEVEIiB3aGljaCBqdXN0IGNvbnRhaW5zICJlcnIiCnR4biBBcHBsaWNhdGlvbklECmludCAwCj4KaW50IDYKKgp0eG4gT25Db21wbGV0aW9uCisKc3dpdGNoIGNyZWF0ZV9Ob09wIE5PVF9JTVBMRU1FTlRFRCBOT1RfSU1QTEVNRU5URUQgTk9UX0lNUExFTUVOVEVEIE5PVF9JTVBMRU1FTlRFRCBOT1RfSU1QTEVNRU5URUQgY2FsbF9Ob09wCgpOT1RfSU1QTEVNRU5URUQ6CgllcnIKCi8vIGFkZHJlc3NCYWxhbmNlKGFkZHJlc3Mpdm9pZAphYmlfcm91dGVfYWRkcmVzc0JhbGFuY2U6CgkvLyBhZGRyOiBhZGRyZXNzCgl0eG5hIEFwcGxpY2F0aW9uQXJncyAxCglkdXAKCWxlbgoJaW50IDMyCgk9PQoJYXNzZXJ0CgoJLy8gZXhlY3V0ZSBhZGRyZXNzQmFsYW5jZShhZGRyZXNzKXZvaWQKCWNhbGxzdWIgYWRkcmVzc0JhbGFuY2UKCWludCAxCglyZXR1cm4KCmFkZHJlc3NCYWxhbmNlOgoJcHJvdG8gMSAwCgoJLy8gY29udHJhY3RzL3Jlc291cmNlLXBhY2tlci5hbGdvLnRzOjEyCgkvLyBhc3NlcnQoYWRkci5iYWxhbmNlKQoJZnJhbWVfZGlnIC0xIC8vIGFkZHI6IGFkZHJlc3MKCWFjY3RfcGFyYW1zX2dldCBBY2N0QmFsYW5jZQoJYXNzZXJ0Cglhc3NlcnQKCXJldHN1YgoKLy8gc21hbGxCb3goKXZvaWQKYWJpX3JvdXRlX3NtYWxsQm94OgoJLy8gZXhlY3V0ZSBzbWFsbEJveCgpdm9pZAoJY2FsbHN1YiBzbWFsbEJveAoJaW50IDEKCXJldHVybgoKc21hbGxCb3g6Cglwcm90byAwIDAKCgkvLyBjb250cmFjdHMvcmVzb3VyY2UtcGFja2VyLmFsZ28udHM6MTYKCS8vIHRoaXMuc21hbGxCb3hLZXkudmFsdWUgPSAnJwoJYnl0ZSAweDczIC8vICJzIgoJYnl0ZSAweDczIC8vICJzIgoJYm94X2RlbAoJcG9wCglieXRlIDB4IC8vICIiCglib3hfcHV0CglyZXRzdWIKCi8vIG1lZGl1bUJveCgpdm9pZAphYmlfcm91dGVfbWVkaXVtQm94OgoJLy8gZXhlY3V0ZSBtZWRpdW1Cb3goKXZvaWQKCWNhbGxzdWIgbWVkaXVtQm94CglpbnQgMQoJcmV0dXJuCgptZWRpdW1Cb3g6Cglwcm90byAwIDAKCgkvLyBjb250cmFjdHMvcmVzb3VyY2UtcGFja2VyLmFsZ28udHM6MjAKCS8vIHRoaXMubWVkaXVtQm94S2V5LmNyZWF0ZSg1XzAwMCkKCWJ5dGUgMHg2ZCAvLyAibSIKCWludCA1XzAwMAoJYm94X2NyZWF0ZQoJcmV0c3ViCgphYmlfcm91dGVfY3JlYXRlQXBwbGljYXRpb246CglpbnQgMQoJcmV0dXJuCgpjcmVhdGVfTm9PcDoKCW1ldGhvZCAiY3JlYXRlQXBwbGljYXRpb24oKXZvaWQiCgl0eG5hIEFwcGxpY2F0aW9uQXJncyAwCgltYXRjaCBhYmlfcm91dGVfY3JlYXRlQXBwbGljYXRpb24KCWVycgoKY2FsbF9Ob09wOgoJbWV0aG9kICJhZGRyZXNzQmFsYW5jZShhZGRyZXNzKXZvaWQiCgltZXRob2QgInNtYWxsQm94KCl2b2lkIgoJbWV0aG9kICJtZWRpdW1Cb3goKXZvaWQiCgl0eG5hIEFwcGxpY2F0aW9uQXJncyAwCgltYXRjaCBhYmlfcm91dGVfYWRkcmVzc0JhbGFuY2UgYWJpX3JvdXRlX3NtYWxsQm94IGFiaV9yb3V0ZV9tZWRpdW1Cb3gKCWVycg==",
     "clear": "I3ByYWdtYSB2ZXJzaW9uIDg="
   },
   "contract": {
@@ -81,6 +91,24 @@ export const APP_SPEC: AppSpec = {
             "desc": ""
           }
         ],
+        "desc": "",
+        "returns": {
+          "type": "void",
+          "desc": ""
+        }
+      },
+      {
+        "name": "smallBox",
+        "args": [],
+        "desc": "",
+        "returns": {
+          "type": "void",
+          "desc": ""
+        }
+      },
+      {
+        "name": "mediumBox",
+        "args": [],
         "desc": "",
         "returns": {
           "type": "void",
@@ -160,6 +188,18 @@ export type ResourcePackerv8 = {
         addr: string
       }
       argsTuple: [addr: string]
+      returns: void
+    }>
+    & Record<'smallBox()void' | 'smallBox', {
+      argsObj: {
+      }
+      argsTuple: []
+      returns: void
+    }>
+    & Record<'mediumBox()void' | 'mediumBox', {
+      argsObj: {
+      }
+      argsTuple: []
       returns: void
     }>
     & Record<'createApplication()void' | 'createApplication', {
@@ -251,6 +291,34 @@ export abstract class ResourcePackerv8CallFactory {
     return {
       method: 'addressBalance(address)void' as const,
       methodArgs: Array.isArray(args) ? args : [args.addr],
+      ...params,
+    }
+  }
+  /**
+   * Constructs a no op call for the smallBox()void ABI method
+   *
+   * @param args Any args for the contract call
+   * @param params Any additional parameters for the call
+   * @returns A TypedCallParams object for the call
+   */
+  static smallBox(args: MethodArgs<'smallBox()void'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
+    return {
+      method: 'smallBox()void' as const,
+      methodArgs: Array.isArray(args) ? args : [],
+      ...params,
+    }
+  }
+  /**
+   * Constructs a no op call for the mediumBox()void ABI method
+   *
+   * @param args Any args for the contract call
+   * @param params Any additional parameters for the call
+   * @returns A TypedCallParams object for the call
+   */
+  static mediumBox(args: MethodArgs<'mediumBox()void'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
+    return {
+      method: 'mediumBox()void' as const,
+      methodArgs: Array.isArray(args) ? args : [],
       ...params,
     }
   }
@@ -364,6 +432,28 @@ export class ResourcePackerv8Client {
     return this.call(ResourcePackerv8CallFactory.addressBalance(args, params))
   }
 
+  /**
+   * Calls the smallBox()void ABI method.
+   *
+   * @param args The arguments for the contract call
+   * @param params Any additional parameters for the call
+   * @returns The result of the call
+   */
+  public smallBox(args: MethodArgs<'smallBox()void'>, params: AppClientCallCoreParams & CoreAppCallArgs = {}) {
+    return this.call(ResourcePackerv8CallFactory.smallBox(args, params))
+  }
+
+  /**
+   * Calls the mediumBox()void ABI method.
+   *
+   * @param args The arguments for the contract call
+   * @param params Any additional parameters for the call
+   * @returns The result of the call
+   */
+  public mediumBox(args: MethodArgs<'mediumBox()void'>, params: AppClientCallCoreParams & CoreAppCallArgs = {}) {
+    return this.call(ResourcePackerv8CallFactory.mediumBox(args, params))
+  }
+
   public compose(): ResourcePackerv8Composer {
     const client = this
     const atc = new AtomicTransactionComposer()
@@ -372,6 +462,16 @@ export class ResourcePackerv8Client {
     return {
       addressBalance(args: MethodArgs<'addressBalance(address)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.addressBalance(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
+        resultMappers.push(undefined)
+        return this
+      },
+      smallBox(args: MethodArgs<'smallBox()void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+        promiseChain = promiseChain.then(() => client.smallBox(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
+        resultMappers.push(undefined)
+        return this
+      },
+      mediumBox(args: MethodArgs<'mediumBox()void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+        promiseChain = promiseChain.then(() => client.mediumBox(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
@@ -408,6 +508,24 @@ export type ResourcePackerv8Composer<TReturns extends [...any[]] = []> = {
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
   addressBalance(args: MethodArgs<'addressBalance(address)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): ResourcePackerv8Composer<[...TReturns, MethodReturn<'addressBalance(address)void'>]>
+
+  /**
+   * Calls the smallBox()void ABI method.
+   *
+   * @param args The arguments for the contract call
+   * @param params Any additional parameters for the call
+   * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
+   */
+  smallBox(args: MethodArgs<'smallBox()void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): ResourcePackerv8Composer<[...TReturns, MethodReturn<'smallBox()void'>]>
+
+  /**
+   * Calls the mediumBox()void ABI method.
+   *
+   * @param args The arguments for the contract call
+   * @param params Any additional parameters for the call
+   * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
+   */
+  mediumBox(args: MethodArgs<'mediumBox()void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): ResourcePackerv8Composer<[...TReturns, MethodReturn<'mediumBox()void'>]>
 
   /**
    * Makes a clear_state call to an existing instance of the ResourcePackerv8 smart contract.
