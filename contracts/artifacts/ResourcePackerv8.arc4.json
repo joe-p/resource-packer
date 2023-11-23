@@ -1,0 +1,30 @@
+{
+  "name": "ResourcePackerv8",
+  "desc": "",
+  "methods": [
+    {
+      "name": "addressBalance",
+      "args": [
+        {
+          "name": "addr",
+          "type": "address",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "createApplication",
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      },
+      "args": []
+    }
+  ]
+}

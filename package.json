@@ -3,9 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "generate-client": "algokitgen generate -a contracts/artifacts/ResourcePacker.arc32.json -o contracts/clients/ResourcePackerClient.ts",
+    "generate-client": "algokitgen generate -a contracts/artifacts/ResourcePackerv8.arc32.json -o contracts/clients/ResourcePackerv8Client.ts",
     "compile-contract": "tealscript contracts/resource-packer.algo.ts contracts/artifacts",
-    "generate-components": "algokit-generate-component contracts/artifacts/ResourcePacker.arc32.json contracts/artifacts/components",
     "build": "npm run compile-contract && npm run generate-client",
     "test": "npm run build && jest",
     "lint": "eslint . --ext .ts",
@@ -13,7 +12,7 @@
   },
   "dependencies": {
     "@algorandfoundation/algokit-utils": "^2.2.0",
-    "algosdk": "^2.4.0"
+    "algosdk": "^2.7.0"
   },
   "devDependencies": {
     "@algorandfoundation/algokit-client-generator": "^2.2.1",
