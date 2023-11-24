@@ -176,6 +176,66 @@ const tests = (version: 8 | 9) => () => {
 
 describe('Resource Packer: AVM8', tests(8));
 describe('Resource Packer: AVM9', tests(9));
+describe('Resource Packer: Mixed', () => {
+  const fixture = algorandFixture();
+
+  let v9Client: ResourcePackerv9Client;
+
+  let v8Client: ResourcePackerv8Client;
+
+  beforeEach(fixture.beforeEach);
+
+  beforeAll(async () => {
+    await fixture.beforeEach();
+    const { algod, testAccount } = fixture.context;
+
+    v9Client = new ResourcePackerv9Client(
+      {
+        sender: testAccount,
+        resolveBy: 'id',
+        id: 0,
+      },
+      algod
+    );
+
+    v8Client = new ResourcePackerv8Client(
+      {
+        sender: testAccount,
+        resolveBy: 'id',
+        id: 0,
+      },
+      algod
+    );
+
+    await v9Client.create.createApplication({});
+    await v8Client.create.createApplication({});
+  });
+
+  test.only('same account', async () => {
+    const { algod, testAccount } = fixture.context;
+    const v8atc = await v8Client.compose().addressBalance({ addr: testAccount.addr }).atc();
+    const v9atc = await v9Client.compose().addressBalance({ addr: testAccount.addr }).atc();
+
+    const atc = new algosdk.AtomicTransactionComposer();
+
+    const v8Call = v8atc.buildGroup()[0];
+    const v9Call = v9atc.buildGroup()[0];
+
+    v8Call.txn.group = undefined;
+    v9Call.txn.group = undefined;
+
+    atc.addTransaction(v8Call);
+    atc.addTransaction(v9Call);
+
+    const packedAtc = await packResources(fixture.context.algod, atc);
+
+    const v8CallAccts = packedAtc.buildGroup()[0].txn.appAccounts;
+    const v9CallAccts = packedAtc.buildGroup()[1].txn.appAccounts;
+
+    expect(v8CallAccts!.length + v9CallAccts!.length).toBe(1);
+    await packedAtc.execute(algod, 3);
+  });
+});
 
 describe('meta', () => {
   const fixture = algorandFixture();
