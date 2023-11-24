@@ -3,6 +3,15 @@
   "desc": "",
   "methods": [
     {
+      "name": "bootstrap",
+      "args": [],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
       "name": "addressBalance",
       "args": [
         {
@@ -28,6 +37,15 @@
     },
     {
       "name": "mediumBox",
+      "args": [],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "externalAppCall",
       "args": [],
       "desc": "",
       "returns": {

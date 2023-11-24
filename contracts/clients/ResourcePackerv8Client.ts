@@ -26,6 +26,11 @@ import { SendTransactionResult, TransactionToSign, SendTransactionFrom } from '@
 import { Algodv2, OnApplicationComplete, Transaction, TransactionWithSigner, AtomicTransactionComposer } from 'algosdk'
 export const APP_SPEC: AppSpec = {
   "hints": {
+    "bootstrap()void": {
+      "call_config": {
+        "no_op": "CALL"
+      }
+    },
     "addressBalance(address)void": {
       "call_config": {
         "no_op": "CALL"
@@ -37,6 +42,11 @@ export const APP_SPEC: AppSpec = {
       }
     },
     "mediumBox()void": {
+      "call_config": {
+        "no_op": "CALL"
+      }
+    },
+    "externalAppCall()void": {
       "call_config": {
         "no_op": "CALL"
       }
@@ -60,14 +70,19 @@ export const APP_SPEC: AppSpec = {
       "reserved": {}
     },
     "global": {
-      "declared": {},
+      "declared": {
+        "externalAppID": {
+          "type": "uint64",
+          "key": "externalAppID"
+        }
+      },
       "reserved": {}
     }
   },
   "state": {
     "global": {
       "num_byte_slices": 0,
-      "num_uints": 0
+      "num_uints": 1
     },
     "local": {
       "num_byte_slices": 0,
@@ -75,13 +90,22 @@ export const APP_SPEC: AppSpec = {
     }
   },
   "source": {
-    "approval": "I3ByYWdtYSB2ZXJzaW9uIDgKCi8vIFRoaXMgVEVBTCB3YXMgZ2VuZXJhdGVkIGJ5IFRFQUxTY3JpcHQgdjAuNjMuMAovLyBodHRwczovL2dpdGh1Yi5jb20vYWxnb3JhbmRmb3VuZGF0aW9uL1RFQUxTY3JpcHQKCi8vIFRoaXMgY29udHJhY3QgaXMgY29tcGxpYW50IHdpdGggYW5kL29yIGltcGxlbWVudHMgdGhlIGZvbGxvd2luZyBBUkNzOiBbIEFSQzQgXQoKLy8gVGhlIGZvbGxvd2luZyB0ZW4gbGluZXMgb2YgVEVBTCBoYW5kbGUgaW5pdGlhbCBwcm9ncmFtIGZsb3cKLy8gVGhpcyBwYXR0ZXJuIGlzIHVzZWQgdG8gbWFrZSBpdCBlYXN5IGZvciBhbnlvbmUgdG8gcGFyc2UgdGhlIHN0YXJ0IG9mIHRoZSBwcm9ncmFtIGFuZCBkZXRlcm1pbmUgaWYgYSBzcGVjaWZpYyBhY3Rpb24gaXMgYWxsb3dlZAovLyBIZXJlLCBhY3Rpb24gcmVmZXJzIHRvIHRoZSBPbkNvbXBsZXRlIGluIGNvbWJpbmF0aW9uIHdpdGggd2hldGhlciB0aGUgYXBwIGlzIGJlaW5nIGNyZWF0ZWQgb3IgY2FsbGVkCi8vIEV2ZXJ5IHBvc3NpYmxlIGFjdGlvbiBmb3IgdGhpcyBjb250cmFjdCBpcyByZXByZXNlbnRlZCBpbiB0aGUgc3dpdGNoIHN0YXRlbWVudAovLyBJZiB0aGUgYWN0aW9uIGlzIG5vdCBpbXBsbWVudGVkIGluIHRoZSBjb250cmFjdCwgaXRzIHJlcHNlY3RpdmUgYnJhbmNoIHdpbGwgYmUgIk5PVF9JTVBMTUVOVEVEIiB3aGljaCBqdXN0IGNvbnRhaW5zICJlcnIiCnR4biBBcHBsaWNhdGlvbklECmludCAwCj4KaW50IDYKKgp0eG4gT25Db21wbGV0aW9uCisKc3dpdGNoIGNyZWF0ZV9Ob09wIE5PVF9JTVBMRU1FTlRFRCBOT1RfSU1QTEVNRU5URUQgTk9UX0lNUExFTUVOVEVEIE5PVF9JTVBMRU1FTlRFRCBOT1RfSU1QTEVNRU5URUQgY2FsbF9Ob09wCgpOT1RfSU1QTEVNRU5URUQ6CgllcnIKCi8vIGFkZHJlc3NCYWxhbmNlKGFkZHJlc3Mpdm9pZAphYmlfcm91dGVfYWRkcmVzc0JhbGFuY2U6CgkvLyBhZGRyOiBhZGRyZXNzCgl0eG5hIEFwcGxpY2F0aW9uQXJncyAxCglkdXAKCWxlbgoJaW50IDMyCgk9PQoJYXNzZXJ0CgoJLy8gZXhlY3V0ZSBhZGRyZXNzQmFsYW5jZShhZGRyZXNzKXZvaWQKCWNhbGxzdWIgYWRkcmVzc0JhbGFuY2UKCWludCAxCglyZXR1cm4KCmFkZHJlc3NCYWxhbmNlOgoJcHJvdG8gMSAwCgoJLy8gY29udHJhY3RzL3Jlc291cmNlLXBhY2tlci5hbGdvLnRzOjEyCgkvLyBhc3NlcnQoYWRkci5iYWxhbmNlKQoJZnJhbWVfZGlnIC0xIC8vIGFkZHI6IGFkZHJlc3MKCWFjY3RfcGFyYW1zX2dldCBBY2N0QmFsYW5jZQoJYXNzZXJ0Cglhc3NlcnQKCXJldHN1YgoKLy8gc21hbGxCb3goKXZvaWQKYWJpX3JvdXRlX3NtYWxsQm94OgoJLy8gZXhlY3V0ZSBzbWFsbEJveCgpdm9pZAoJY2FsbHN1YiBzbWFsbEJveAoJaW50IDEKCXJldHVybgoKc21hbGxCb3g6Cglwcm90byAwIDAKCgkvLyBjb250cmFjdHMvcmVzb3VyY2UtcGFja2VyLmFsZ28udHM6MTYKCS8vIHRoaXMuc21hbGxCb3hLZXkudmFsdWUgPSAnJwoJYnl0ZSAweDczIC8vICJzIgoJYnl0ZSAweDczIC8vICJzIgoJYm94X2RlbAoJcG9wCglieXRlIDB4IC8vICIiCglib3hfcHV0CglyZXRzdWIKCi8vIG1lZGl1bUJveCgpdm9pZAphYmlfcm91dGVfbWVkaXVtQm94OgoJLy8gZXhlY3V0ZSBtZWRpdW1Cb3goKXZvaWQKCWNhbGxzdWIgbWVkaXVtQm94CglpbnQgMQoJcmV0dXJuCgptZWRpdW1Cb3g6Cglwcm90byAwIDAKCgkvLyBjb250cmFjdHMvcmVzb3VyY2UtcGFja2VyLmFsZ28udHM6MjAKCS8vIHRoaXMubWVkaXVtQm94S2V5LmNyZWF0ZSg1XzAwMCkKCWJ5dGUgMHg2ZCAvLyAibSIKCWludCA1XzAwMAoJYm94X2NyZWF0ZQoJcmV0c3ViCgphYmlfcm91dGVfY3JlYXRlQXBwbGljYXRpb246CglpbnQgMQoJcmV0dXJuCgpjcmVhdGVfTm9PcDoKCW1ldGhvZCAiY3JlYXRlQXBwbGljYXRpb24oKXZvaWQiCgl0eG5hIEFwcGxpY2F0aW9uQXJncyAwCgltYXRjaCBhYmlfcm91dGVfY3JlYXRlQXBwbGljYXRpb24KCWVycgoKY2FsbF9Ob09wOgoJbWV0aG9kICJhZGRyZXNzQmFsYW5jZShhZGRyZXNzKXZvaWQiCgltZXRob2QgInNtYWxsQm94KCl2b2lkIgoJbWV0aG9kICJtZWRpdW1Cb3goKXZvaWQiCgl0eG5hIEFwcGxpY2F0aW9uQXJncyAwCgltYXRjaCBhYmlfcm91dGVfYWRkcmVzc0JhbGFuY2UgYWJpX3JvdXRlX3NtYWxsQm94IGFiaV9yb3V0ZV9tZWRpdW1Cb3gKCWVycg==",
+    "approval": "I3ByYWdtYSB2ZXJzaW9uIDgKCi8vIFRoaXMgVEVBTCB3YXMgZ2VuZXJhdGVkIGJ5IFRFQUxTY3JpcHQgdjAuNjMuMAovLyBodHRwczovL2dpdGh1Yi5jb20vYWxnb3JhbmRmb3VuZGF0aW9uL1RFQUxTY3JpcHQKCi8vIFRoaXMgY29udHJhY3QgaXMgY29tcGxpYW50IHdpdGggYW5kL29yIGltcGxlbWVudHMgdGhlIGZvbGxvd2luZyBBUkNzOiBbIEFSQzQgXQoKLy8gVGhlIGZvbGxvd2luZyB0ZW4gbGluZXMgb2YgVEVBTCBoYW5kbGUgaW5pdGlhbCBwcm9ncmFtIGZsb3cKLy8gVGhpcyBwYXR0ZXJuIGlzIHVzZWQgdG8gbWFrZSBpdCBlYXN5IGZvciBhbnlvbmUgdG8gcGFyc2UgdGhlIHN0YXJ0IG9mIHRoZSBwcm9ncmFtIGFuZCBkZXRlcm1pbmUgaWYgYSBzcGVjaWZpYyBhY3Rpb24gaXMgYWxsb3dlZAovLyBIZXJlLCBhY3Rpb24gcmVmZXJzIHRvIHRoZSBPbkNvbXBsZXRlIGluIGNvbWJpbmF0aW9uIHdpdGggd2hldGhlciB0aGUgYXBwIGlzIGJlaW5nIGNyZWF0ZWQgb3IgY2FsbGVkCi8vIEV2ZXJ5IHBvc3NpYmxlIGFjdGlvbiBmb3IgdGhpcyBjb250cmFjdCBpcyByZXByZXNlbnRlZCBpbiB0aGUgc3dpdGNoIHN0YXRlbWVudAovLyBJZiB0aGUgYWN0aW9uIGlzIG5vdCBpbXBsbWVudGVkIGluIHRoZSBjb250cmFjdCwgaXRzIHJlcHNlY3RpdmUgYnJhbmNoIHdpbGwgYmUgIk5PVF9JTVBMTUVOVEVEIiB3aGljaCBqdXN0IGNvbnRhaW5zICJlcnIiCnR4biBBcHBsaWNhdGlvbklECmludCAwCj4KaW50IDYKKgp0eG4gT25Db21wbGV0aW9uCisKc3dpdGNoIGNyZWF0ZV9Ob09wIE5PVF9JTVBMRU1FTlRFRCBOT1RfSU1QTEVNRU5URUQgTk9UX0lNUExFTUVOVEVEIE5PVF9JTVBMRU1FTlRFRCBOT1RfSU1QTEVNRU5URUQgY2FsbF9Ob09wCgpOT1RfSU1QTEVNRU5URUQ6CgllcnIKCi8vIGJvb3RzdHJhcCgpdm9pZAphYmlfcm91dGVfYm9vdHN0cmFwOgoJLy8gZXhlY3V0ZSBib290c3RyYXAoKXZvaWQKCWNhbGxzdWIgYm9vdHN0cmFwCglpbnQgMQoJcmV0dXJuCgpib290c3RyYXA6Cglwcm90byAwIDAKCgkvLyBjb250cmFjdHMvcmVzb3VyY2UtcGFja2VyLmFsZ28udHM6MTgKCS8vIHNlbmRNZXRob2RDYWxsPFtdLCB2b2lkPih7CgkvLyAgICAgICBuYW1lOiAnY3JlYXRlQXBwbGljYXRpb24nLAoJLy8gICAgICAgYXBwcm92YWxQcm9ncmFtOiBFeHRlcm5hbEFwcFY4LmFwcHJvdmFsUHJvZ3JhbSgpLAoJLy8gICAgICAgY2xlYXJTdGF0ZVByb2dyYW06IEV4dGVybmFsQXBwVjguY2xlYXJQcm9ncmFtKCksCgkvLyAgICAgICBsb2NhbE51bUJ5dGVTbGljZTogRXh0ZXJuYWxBcHBWOC5zY2hlbWEubG9jYWwubnVtQnl0ZVNsaWNlLAoJLy8gICAgICAgZ2xvYmFsTnVtQnl0ZVNsaWNlOiBFeHRlcm5hbEFwcFY4LnNjaGVtYS5nbG9iYWwubnVtQnl0ZVNsaWNlLAoJLy8gICAgICAgZ2xvYmFsTnVtVWludDogRXh0ZXJuYWxBcHBWOC5zY2hlbWEuZ2xvYmFsLm51bVVpbnQsCgkvLyAgICAgICBsb2NhbE51bVVpbnQ6IEV4dGVybmFsQXBwVjguc2NoZW1hLmxvY2FsLm51bVVpbnQsCgkvLyAgICAgfSkKCWl0eG5fYmVnaW4KCWludCBhcHBsCglpdHhuX2ZpZWxkIFR5cGVFbnVtCgltZXRob2QgImNyZWF0ZUFwcGxpY2F0aW9uKCl2b2lkIgoJaXR4bl9maWVsZCBBcHBsaWNhdGlvbkFyZ3MKCgkvLyBjb250cmFjdHMvcmVzb3VyY2UtcGFja2VyLmFsZ28udHM6MjAKCS8vIGFwcHJvdmFsUHJvZ3JhbTogRXh0ZXJuYWxBcHBWOC5hcHByb3ZhbFByb2dyYW0oKQoJYnl0ZSBiNjQgQ1NBQkFURVlnUUFOZ1FZTE1Sa0lqUWNBREFBQUFBQUFBQUFBQUFBQUdnQ0lBQUlpUTRvQUFJa2lRNEFFdUVSN05qWWFBSTRCLy9FQWdBU2pET2YvTmhvQWpnSC8yZ0E9CglpdHhuX2ZpZWxkIEFwcHJvdmFsUHJvZ3JhbQoKCS8vIGNvbnRyYWN0cy9yZXNvdXJjZS1wYWNrZXIuYWxnby50czoyMQoJLy8gY2xlYXJTdGF0ZVByb2dyYW06IEV4dGVybmFsQXBwVjguY2xlYXJQcm9ncmFtKCkKCWJ5dGUgYjY0IENRPT0KCWl0eG5fZmllbGQgQ2xlYXJTdGF0ZVByb2dyYW0KCgkvLyBjb250cmFjdHMvcmVzb3VyY2UtcGFja2VyLmFsZ28udHM6MjIKCS8vIGxvY2FsTnVtQnl0ZVNsaWNlOiBFeHRlcm5hbEFwcFY4LnNjaGVtYS5sb2NhbC5udW1CeXRlU2xpY2UKCWludCAwCglpdHhuX2ZpZWxkIExvY2FsTnVtQnl0ZVNsaWNlCgoJLy8gY29udHJhY3RzL3Jlc291cmNlLXBhY2tlci5hbGdvLnRzOjIzCgkvLyBnbG9iYWxOdW1CeXRlU2xpY2U6IEV4dGVybmFsQXBwVjguc2NoZW1hLmdsb2JhbC5udW1CeXRlU2xpY2UKCWludCAwCglpdHhuX2ZpZWxkIEdsb2JhbE51bUJ5dGVTbGljZQoKCS8vIGNvbnRyYWN0cy9yZXNvdXJjZS1wYWNrZXIuYWxnby50czoyNAoJLy8gZ2xvYmFsTnVtVWludDogRXh0ZXJuYWxBcHBWOC5zY2hlbWEuZ2xvYmFsLm51bVVpbnQKCWludCAwCglpdHhuX2ZpZWxkIEdsb2JhbE51bVVpbnQKCgkvLyBjb250cmFjdHMvcmVzb3VyY2UtcGFja2VyLmFsZ28udHM6MjUKCS8vIGxvY2FsTnVtVWludDogRXh0ZXJuYWxBcHBWOC5zY2hlbWEubG9jYWwubnVtVWludAoJaW50IDAKCWl0eG5fZmllbGQgTG9jYWxOdW1VaW50CgoJLy8gRmVlIGZpZWxkIG5vdCBzZXQsIGRlZmF1bHRpbmcgdG8gMAoJaW50IDAKCWl0eG5fZmllbGQgRmVlCgoJLy8gU3VibWl0IGlubmVyIHRyYW5zYWN0aW9uCglpdHhuX3N1Ym1pdAoKCS8vIGNvbnRyYWN0cy9yZXNvdXJjZS1wYWNrZXIuYWxnby50czoyOAoJLy8gdGhpcy5leHRlcm5hbEFwcElELnZhbHVlID0gdGhpcy5pdHhuLmNyZWF0ZWRBcHBsaWNhdGlvbklECglieXRlIDB4NjU3ODc0NjU3MjZlNjE2YzQxNzA3MDQ5NDQgLy8gImV4dGVybmFsQXBwSUQiCglpdHhuIENyZWF0ZWRBcHBsaWNhdGlvbklECglhcHBfZ2xvYmFsX3B1dAoJcmV0c3ViCgovLyBhZGRyZXNzQmFsYW5jZShhZGRyZXNzKXZvaWQKYWJpX3JvdXRlX2FkZHJlc3NCYWxhbmNlOgoJLy8gYWRkcjogYWRkcmVzcwoJdHhuYSBBcHBsaWNhdGlvbkFyZ3MgMQoJZHVwCglsZW4KCWludCAzMgoJPT0KCWFzc2VydAoKCS8vIGV4ZWN1dGUgYWRkcmVzc0JhbGFuY2UoYWRkcmVzcyl2b2lkCgljYWxsc3ViIGFkZHJlc3NCYWxhbmNlCglpbnQgMQoJcmV0dXJuCgphZGRyZXNzQmFsYW5jZToKCXByb3RvIDEgMAoKCS8vIGNvbnRyYWN0cy9yZXNvdXJjZS1wYWNrZXIuYWxnby50czozMgoJLy8gYXNzZXJ0KGFkZHIuYmFsYW5jZSkKCWZyYW1lX2RpZyAtMSAvLyBhZGRyOiBhZGRyZXNzCglhY2N0X3BhcmFtc19nZXQgQWNjdEJhbGFuY2UKCWFzc2VydAoJYXNzZXJ0CglyZXRzdWIKCi8vIHNtYWxsQm94KCl2b2lkCmFiaV9yb3V0ZV9zbWFsbEJveDoKCS8vIGV4ZWN1dGUgc21hbGxCb3goKXZvaWQKCWNhbGxzdWIgc21hbGxCb3gKCWludCAxCglyZXR1cm4KCnNtYWxsQm94OgoJcHJvdG8gMCAwCgoJLy8gY29udHJhY3RzL3Jlc291cmNlLXBhY2tlci5hbGdvLnRzOjM2CgkvLyB0aGlzLnNtYWxsQm94S2V5LnZhbHVlID0gJycKCWJ5dGUgMHg3MyAvLyAicyIKCWJ5dGUgMHg3MyAvLyAicyIKCWJveF9kZWwKCXBvcAoJYnl0ZSAweCAvLyAiIgoJYm94X3B1dAoJcmV0c3ViCgovLyBtZWRpdW1Cb3goKXZvaWQKYWJpX3JvdXRlX21lZGl1bUJveDoKCS8vIGV4ZWN1dGUgbWVkaXVtQm94KCl2b2lkCgljYWxsc3ViIG1lZGl1bUJveAoJaW50IDEKCXJldHVybgoKbWVkaXVtQm94OgoJcHJvdG8gMCAwCgoJLy8gY29udHJhY3RzL3Jlc291cmNlLXBhY2tlci5hbGdvLnRzOjQwCgkvLyB0aGlzLm1lZGl1bUJveEtleS5jcmVhdGUoNV8wMDApCglieXRlIDB4NmQgLy8gIm0iCglpbnQgNV8wMDAKCWJveF9jcmVhdGUKCXJldHN1YgoKLy8gZXh0ZXJuYWxBcHBDYWxsKCl2b2lkCmFiaV9yb3V0ZV9leHRlcm5hbEFwcENhbGw6CgkvLyBleGVjdXRlIGV4dGVybmFsQXBwQ2FsbCgpdm9pZAoJY2FsbHN1YiBleHRlcm5hbEFwcENhbGwKCWludCAxCglyZXR1cm4KCmV4dGVybmFsQXBwQ2FsbDoKCXByb3RvIDAgMAoKCS8vIGNvbnRyYWN0cy9yZXNvdXJjZS1wYWNrZXIuYWxnby50czo0NAoJLy8gc2VuZE1ldGhvZENhbGw8W10sIHZvaWQ+KHsKCS8vICAgICAgIGFwcGxpY2F0aW9uSUQ6IHRoaXMuZXh0ZXJuYWxBcHBJRC52YWx1ZSwKCS8vICAgICAgIG5hbWU6ICdkdW1teScsCgkvLyAgICAgfSkKCWl0eG5fYmVnaW4KCWludCBhcHBsCglpdHhuX2ZpZWxkIFR5cGVFbnVtCgltZXRob2QgImR1bW15KCl2b2lkIgoJaXR4bl9maWVsZCBBcHBsaWNhdGlvbkFyZ3MKCgkvLyBjb250cmFjdHMvcmVzb3VyY2UtcGFja2VyLmFsZ28udHM6NDUKCS8vIGFwcGxpY2F0aW9uSUQ6IHRoaXMuZXh0ZXJuYWxBcHBJRC52YWx1ZQoJYnl0ZSAweDY1Nzg3NDY1NzI2ZTYxNmM0MTcwNzA0OTQ0IC8vICJleHRlcm5hbEFwcElEIgoJYXBwX2dsb2JhbF9nZXQKCWl0eG5fZmllbGQgQXBwbGljYXRpb25JRAoKCS8vIEZlZSBmaWVsZCBub3Qgc2V0LCBkZWZhdWx0aW5nIHRvIDAKCWludCAwCglpdHhuX2ZpZWxkIEZlZQoKCS8vIFN1Ym1pdCBpbm5lciB0cmFuc2FjdGlvbgoJaXR4bl9zdWJtaXQKCXJldHN1YgoKYWJpX3JvdXRlX2NyZWF0ZUFwcGxpY2F0aW9uOgoJaW50IDEKCXJldHVybgoKY3JlYXRlX05vT3A6CgltZXRob2QgImNyZWF0ZUFwcGxpY2F0aW9uKCl2b2lkIgoJdHhuYSBBcHBsaWNhdGlvbkFyZ3MgMAoJbWF0Y2ggYWJpX3JvdXRlX2NyZWF0ZUFwcGxpY2F0aW9uCgllcnIKCmNhbGxfTm9PcDoKCW1ldGhvZCAiYm9vdHN0cmFwKCl2b2lkIgoJbWV0aG9kICJhZGRyZXNzQmFsYW5jZShhZGRyZXNzKXZvaWQiCgltZXRob2QgInNtYWxsQm94KCl2b2lkIgoJbWV0aG9kICJtZWRpdW1Cb3goKXZvaWQiCgltZXRob2QgImV4dGVybmFsQXBwQ2FsbCgpdm9pZCIKCXR4bmEgQXBwbGljYXRpb25BcmdzIDAKCW1hdGNoIGFiaV9yb3V0ZV9ib290c3RyYXAgYWJpX3JvdXRlX2FkZHJlc3NCYWxhbmNlIGFiaV9yb3V0ZV9zbWFsbEJveCBhYmlfcm91dGVfbWVkaXVtQm94IGFiaV9yb3V0ZV9leHRlcm5hbEFwcENhbGwKCWVycg==",
     "clear": "I3ByYWdtYSB2ZXJzaW9uIDg="
   },
   "contract": {
     "name": "ResourcePackerv8",
     "desc": "",
     "methods": [
+      {
+        "name": "bootstrap",
+        "args": [],
+        "desc": "",
+        "returns": {
+          "type": "void",
+          "desc": ""
+        }
+      },
       {
         "name": "addressBalance",
         "args": [
@@ -108,6 +132,15 @@ export const APP_SPEC: AppSpec = {
       },
       {
         "name": "mediumBox",
+        "args": [],
+        "desc": "",
+        "returns": {
+          "type": "void",
+          "desc": ""
+        }
+      },
+      {
+        "name": "externalAppCall",
         "args": [],
         "desc": "",
         "returns": {
@@ -183,6 +216,12 @@ export type ResourcePackerv8 = {
    * Maps method signatures / names to their argument and return types.
    */
   methods:
+    & Record<'bootstrap()void' | 'bootstrap', {
+      argsObj: {
+      }
+      argsTuple: []
+      returns: void
+    }>
     & Record<'addressBalance(address)void' | 'addressBalance', {
       argsObj: {
         addr: string
@@ -202,12 +241,26 @@ export type ResourcePackerv8 = {
       argsTuple: []
       returns: void
     }>
+    & Record<'externalAppCall()void' | 'externalAppCall', {
+      argsObj: {
+      }
+      argsTuple: []
+      returns: void
+    }>
     & Record<'createApplication()void' | 'createApplication', {
       argsObj: {
       }
       argsTuple: []
       returns: void
     }>
+  /**
+   * Defines the shape of the global and local state of the application.
+   */
+  state: {
+    global: {
+      'externalAppID'?: IntegerState
+    }
+  }
 }
 /**
  * Defines the possible abi call signatures
@@ -281,6 +334,20 @@ export abstract class ResourcePackerv8CallFactory {
   }
 
   /**
+   * Constructs a no op call for the bootstrap()void ABI method
+   *
+   * @param args Any args for the contract call
+   * @param params Any additional parameters for the call
+   * @returns A TypedCallParams object for the call
+   */
+  static bootstrap(args: MethodArgs<'bootstrap()void'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
+    return {
+      method: 'bootstrap()void' as const,
+      methodArgs: Array.isArray(args) ? args : [],
+      ...params,
+    }
+  }
+  /**
    * Constructs a no op call for the addressBalance(address)void ABI method
    *
    * @param args Any args for the contract call
@@ -318,6 +385,20 @@ export abstract class ResourcePackerv8CallFactory {
   static mediumBox(args: MethodArgs<'mediumBox()void'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
     return {
       method: 'mediumBox()void' as const,
+      methodArgs: Array.isArray(args) ? args : [],
+      ...params,
+    }
+  }
+  /**
+   * Constructs a no op call for the externalAppCall()void ABI method
+   *
+   * @param args Any args for the contract call
+   * @param params Any additional parameters for the call
+   * @returns A TypedCallParams object for the call
+   */
+  static externalAppCall(args: MethodArgs<'externalAppCall()void'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
+    return {
+      method: 'externalAppCall()void' as const,
       methodArgs: Array.isArray(args) ? args : [],
       ...params,
     }
@@ -422,6 +503,17 @@ export class ResourcePackerv8Client {
   }
 
   /**
+   * Calls the bootstrap()void ABI method.
+   *
+   * @param args The arguments for the contract call
+   * @param params Any additional parameters for the call
+   * @returns The result of the call
+   */
+  public bootstrap(args: MethodArgs<'bootstrap()void'>, params: AppClientCallCoreParams & CoreAppCallArgs = {}) {
+    return this.call(ResourcePackerv8CallFactory.bootstrap(args, params))
+  }
+
+  /**
    * Calls the addressBalance(address)void ABI method.
    *
    * @param args The arguments for the contract call
@@ -454,12 +546,84 @@ export class ResourcePackerv8Client {
     return this.call(ResourcePackerv8CallFactory.mediumBox(args, params))
   }
 
+  /**
+   * Calls the externalAppCall()void ABI method.
+   *
+   * @param args The arguments for the contract call
+   * @param params Any additional parameters for the call
+   * @returns The result of the call
+   */
+  public externalAppCall(args: MethodArgs<'externalAppCall()void'>, params: AppClientCallCoreParams & CoreAppCallArgs = {}) {
+    return this.call(ResourcePackerv8CallFactory.externalAppCall(args, params))
+  }
+
+  /**
+   * Extracts a binary state value out of an AppState dictionary
+   *
+   * @param state The state dictionary containing the state value
+   * @param key The key of the state value
+   * @returns A BinaryState instance containing the state value, or undefined if the key was not found
+   */
+  private static getBinaryState(state: AppState, key: string): BinaryState | undefined {
+    const value = state[key]
+    if (!value) return undefined
+    if (!('valueRaw' in value))
+      throw new Error(`Failed to parse state value for ${key}; received an int when expected a byte array`)
+    return {
+      asString(): string {
+        return value.value
+      },
+      asByteArray(): Uint8Array {
+        return value.valueRaw
+      }
+    }
+  }
+
+  /**
+   * Extracts a integer state value out of an AppState dictionary
+   *
+   * @param state The state dictionary containing the state value
+   * @param key The key of the state value
+   * @returns An IntegerState instance containing the state value, or undefined if the key was not found
+   */
+  private static getIntegerState(state: AppState, key: string): IntegerState | undefined {
+    const value = state[key]
+    if (!value) return undefined
+    if ('valueRaw' in value)
+      throw new Error(`Failed to parse state value for ${key}; received a byte array when expected a number`)
+    return {
+      asBigInt() {
+        return typeof value.value === 'bigint' ? value.value : BigInt(value.value)
+      },
+      asNumber(): number {
+        return typeof value.value === 'bigint' ? Number(value.value) : value.value
+      },
+    }
+  }
+
+  /**
+   * Returns the smart contract's global state wrapped in a strongly typed accessor with options to format the stored value
+   */
+  public async getGlobalState(): Promise<ResourcePackerv8['state']['global']> {
+    const state = await this.appClient.getGlobalState()
+    return {
+      get externalAppID() {
+        return ResourcePackerv8Client.getIntegerState(state, 'externalAppID')
+      },
+    }
+  }
+
   public compose(): ResourcePackerv8Composer {
     const client = this
     const atc = new AtomicTransactionComposer()
     let promiseChain:Promise<unknown> = Promise.resolve()
     const resultMappers: Array<undefined | ((x: any) => any)> = []
     return {
+      bootstrap(args: MethodArgs<'bootstrap()void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+        promiseChain = promiseChain.then(() => client.bootstrap(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
+        resultMappers.push(undefined)
+        return this
+      },
       addressBalance(args: MethodArgs<'addressBalance(address)void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.addressBalance(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
@@ -472,6 +636,11 @@ export class ResourcePackerv8Client {
       },
       mediumBox(args: MethodArgs<'mediumBox()void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
         promiseChain = promiseChain.then(() => client.mediumBox(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
+        resultMappers.push(undefined)
+        return this
+      },
+      externalAppCall(args: MethodArgs<'externalAppCall()void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+        promiseChain = promiseChain.then(() => client.externalAppCall(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
         resultMappers.push(undefined)
         return this
       },
@@ -501,6 +670,15 @@ export class ResourcePackerv8Client {
 }
 export type ResourcePackerv8Composer<TReturns extends [...any[]] = []> = {
   /**
+   * Calls the bootstrap()void ABI method.
+   *
+   * @param args The arguments for the contract call
+   * @param params Any additional parameters for the call
+   * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
+   */
+  bootstrap(args: MethodArgs<'bootstrap()void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): ResourcePackerv8Composer<[...TReturns, MethodReturn<'bootstrap()void'>]>
+
+  /**
    * Calls the addressBalance(address)void ABI method.
    *
    * @param args The arguments for the contract call
@@ -526,6 +704,15 @@ export type ResourcePackerv8Composer<TReturns extends [...any[]] = []> = {
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
   mediumBox(args: MethodArgs<'mediumBox()void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): ResourcePackerv8Composer<[...TReturns, MethodReturn<'mediumBox()void'>]>
+
+  /**
+   * Calls the externalAppCall()void ABI method.
+   *
+   * @param args The arguments for the contract call
+   * @param params Any additional parameters for the call
+   * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
+   */
+  externalAppCall(args: MethodArgs<'externalAppCall()void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): ResourcePackerv8Composer<[...TReturns, MethodReturn<'externalAppCall()void'>]>
 
   /**
    * Makes a clear_state call to an existing instance of the ResourcePackerv8 smart contract.

@@ -76,9 +76,12 @@ async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicTransact
       group[i].txn.appAccounts?.push(algosdk.decodeAddress(a));
     });
 
+    r.apps?.forEach((a) => {
+      group[i].txn.appForeignApps?.push(Number(a));
+    });
+
     // TODO: Support all of these
     if (r.appLocals) throw Error('App locals not yet supported');
-    if (r.apps) throw Error('Apps not yet supported');
     if (r.assetHoldings) throw Error('Asset holdings not yet supported');
     if (r.assets) throw Error('Assets not yet supported');
     if (r.boxes) throw Error('Boxes not yet supported');
@@ -117,6 +120,10 @@ describe('ResourcePacker', () => {
     );
 
     await v8Client.create.createApplication({});
+
+    await v8Client.appClient.fundAppAccount(algokit.microAlgos(2205800));
+
+    await v8Client.bootstrap({}, { sendParams: { fee: algokit.microAlgos(2_000) } });
   });
 
   let alice: algosdk.Account;
@@ -143,10 +150,6 @@ describe('ResourcePacker', () => {
   });
 
   describe('boxes', () => {
-    beforeAll(async () => {
-      v8Client.appClient.fundAppAccount(algokit.microAlgos(2105800));
-    });
-
     test('smallBox: invalid Box reference', async () => {
       await expect(v8Client.smallBox({})).rejects.toThrow('invalid Box reference');
     });
@@ -163,6 +166,24 @@ describe('ResourcePacker', () => {
     test('mediumBox', async () => {
       const { algod } = fixture.context;
       const atc = await v8Client.compose().mediumBox({}).atc();
+
+      const packedAtc = await packResources(fixture.context.algod, atc);
+
+      await packedAtc.execute(algod, 3);
+    });
+  });
+
+  describe('apps', () => {
+    test('externalAppCall: unavailable App', async () => {
+      await expect(v8Client.externalAppCall({})).rejects.toThrow('unavailable App');
+    });
+
+    test('externalAppCall', async () => {
+      const { algod } = fixture.context;
+      const atc = await v8Client
+        .compose()
+        .externalAppCall({}, { sendParams: { fee: algokit.microAlgos(2_000) } })
+        .atc();
 
       const packedAtc = await packResources(fixture.context.algod, atc);
 

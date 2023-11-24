@@ -22,6 +22,76 @@ switch create_NoOp NOT_IMPLEMENTED NOT_IMPLEMENTED NOT_IMPLEMENTED NOT_IMPLEMENT
 NOT_IMPLEMENTED:
 	err
 
+// bootstrap()void
+abi_route_bootstrap:
+	// execute bootstrap()void
+	callsub bootstrap
+	int 1
+	return
+
+bootstrap:
+	proto 0 0
+
+	// contracts/resource-packer.algo.ts:18
+	// sendMethodCall<[], void>({
+	//       name: 'createApplication',
+	//       approvalProgram: ExternalAppV8.approvalProgram(),
+	//       clearStateProgram: ExternalAppV8.clearProgram(),
+	//       localNumByteSlice: ExternalAppV8.schema.local.numByteSlice,
+	//       globalNumByteSlice: ExternalAppV8.schema.global.numByteSlice,
+	//       globalNumUint: ExternalAppV8.schema.global.numUint,
+	//       localNumUint: ExternalAppV8.schema.local.numUint,
+	//     })
+	itxn_begin
+	int appl
+	itxn_field TypeEnum
+	method "createApplication()void"
+	itxn_field ApplicationArgs
+
+	// contracts/resource-packer.algo.ts:20
+	// approvalProgram: ExternalAppV8.approvalProgram()
+	byte b64 CSABATEYgQANgQYLMRkIjQcADAAAAAAAAAAAAAAAGgCIAAIiQ4oAAIkiQ4AEuER7NjYaAI4B//EAgASjDOf/NhoAjgH/2gA=
+	itxn_field ApprovalProgram
+
+	// contracts/resource-packer.algo.ts:21
+	// clearStateProgram: ExternalAppV8.clearProgram()
+	byte b64 CQ==
+	itxn_field ClearStateProgram
+
+	// contracts/resource-packer.algo.ts:22
+	// localNumByteSlice: ExternalAppV8.schema.local.numByteSlice
+	int 0
+	itxn_field LocalNumByteSlice
+
+	// contracts/resource-packer.algo.ts:23
+	// globalNumByteSlice: ExternalAppV8.schema.global.numByteSlice
+	int 0
+	itxn_field GlobalNumByteSlice
+
+	// contracts/resource-packer.algo.ts:24
+	// globalNumUint: ExternalAppV8.schema.global.numUint
+	int 0
+	itxn_field GlobalNumUint
+
+	// contracts/resource-packer.algo.ts:25
+	// localNumUint: ExternalAppV8.schema.local.numUint
+	int 0
+	itxn_field LocalNumUint
+
+	// Fee field not set, defaulting to 0
+	int 0
+	itxn_field Fee
+
+	// Submit inner transaction
+	itxn_submit
+
+	// contracts/resource-packer.algo.ts:28
+	// this.externalAppID.value = this.itxn.createdApplicationID
+	byte 0x65787465726e616c4170704944 // "externalAppID"
+	itxn CreatedApplicationID
+	app_global_put
+	retsub
+
 // addressBalance(address)void
 abi_route_addressBalance:
 	// addr: address
@@ -40,7 +110,7 @@ abi_route_addressBalance:
 addressBalance:
 	proto 1 0
 
-	// contracts/resource-packer.algo.ts:12
+	// contracts/resource-packer.algo.ts:32
 	// assert(addr.balance)
 	frame_dig -1 // addr: address
 	acct_params_get AcctBalance
@@ -58,7 +128,7 @@ abi_route_smallBox:
 smallBox:
 	proto 0 0
 
-	// contracts/resource-packer.algo.ts:16
+	// contracts/resource-packer.algo.ts:36
 	// this.smallBoxKey.value = ''
 	byte 0x73 // "s"
 	byte 0x73 // "s"
@@ -78,11 +148,46 @@ abi_route_mediumBox:
 mediumBox:
 	proto 0 0
 
-	// contracts/resource-packer.algo.ts:20
+	// contracts/resource-packer.algo.ts:40
 	// this.mediumBoxKey.create(5_000)
 	byte 0x6d // "m"
 	int 5_000
 	box_create
+	retsub
+
+// externalAppCall()void
+abi_route_externalAppCall:
+	// execute externalAppCall()void
+	callsub externalAppCall
+	int 1
+	return
+
+externalAppCall:
+	proto 0 0
+
+	// contracts/resource-packer.algo.ts:44
+	// sendMethodCall<[], void>({
+	//       applicationID: this.externalAppID.value,
+	//       name: 'dummy',
+	//     })
+	itxn_begin
+	int appl
+	itxn_field TypeEnum
+	method "dummy()void"
+	itxn_field ApplicationArgs
+
+	// contracts/resource-packer.algo.ts:45
+	// applicationID: this.externalAppID.value
+	byte 0x65787465726e616c4170704944 // "externalAppID"
+	app_global_get
+	itxn_field ApplicationID
+
+	// Fee field not set, defaulting to 0
+	int 0
+	itxn_field Fee
+
+	// Submit inner transaction
+	itxn_submit
 	retsub
 
 abi_route_createApplication:
@@ -96,9 +201,11 @@ create_NoOp:
 	err
 
 call_NoOp:
+	method "bootstrap()void"
 	method "addressBalance(address)void"
 	method "smallBox()void"
 	method "mediumBox()void"
+	method "externalAppCall()void"
 	txna ApplicationArgs 0
-	match abi_route_addressBalance abi_route_smallBox abi_route_mediumBox
+	match abi_route_bootstrap abi_route_addressBalance abi_route_smallBox abi_route_mediumBox abi_route_externalAppCall
 	err

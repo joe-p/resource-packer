@@ -1,0 +1,24 @@
+{
+  "name": "ExternalAppV8",
+  "desc": "",
+  "methods": [
+    {
+      "name": "dummy",
+      "args": [],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
+      "name": "createApplication",
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      },
+      "args": []
+    }
+  ]
+}
