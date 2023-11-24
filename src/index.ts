@@ -41,12 +41,8 @@ export async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicT
       const apps = t.txn.appForeignApps?.length || 0;
       const boxes = t.txn.boxes?.length || 0;
 
-      if (type === 'assetHolding') {
+      if (type === 'assetHolding' || type === 'appLocal') {
         return accounts + assets + apps + boxes < 7 && accounts < 4;
-      }
-
-      if (type === 'appLocal') {
-        return accounts + assets + apps + boxes < 7;
       }
 
       return accounts + assets + apps + boxes < 8;
@@ -63,6 +59,8 @@ export async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicT
   const g = unnamedResourcesAccessed.group;
 
   if (g) {
+    // Do cross-reference resources first because they are the most restrictive in terms
+    // of which transactions can be used
     g.appLocals?.forEach((a) => {
       const txnIndex = findTxnBelowRefLimit(group, 'appLocal');
       group[txnIndex].txn.appForeignApps?.push(Number(a.app));
@@ -75,6 +73,12 @@ export async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicT
       group[txnIndex].txn.appAccounts?.push(algosdk.decodeAddress(a.account));
     });
 
+    // Do accounts next because the account limit is 4
+    g.accounts?.forEach((a) => {
+      const txnIndex = findTxnBelowRefLimit(group, 'account');
+      group[txnIndex].txn.appAccounts?.push(algosdk.decodeAddress(a));
+    });
+
     g.boxes?.forEach((b) => {
       const txnIndex = findTxnBelowRefLimit(group);
       group[txnIndex].txn.boxes?.push({ appIndex: Number(b.app), name: b.name });
@@ -83,11 +87,6 @@ export async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicT
     g.assets?.forEach((a) => {
       const txnIndex = findTxnBelowRefLimit(group);
       group[txnIndex].txn.appForeignAssets?.push(Number(a));
-    });
-
-    g.accounts?.forEach((a) => {
-      const txnIndex = findTxnBelowRefLimit(group, 'account');
-      group[txnIndex].txn.appAccounts?.push(algosdk.decodeAddress(a));
     });
 
     g.apps?.forEach((a) => {
