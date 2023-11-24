@@ -51,6 +51,17 @@ dummy:
 	proto 0 0
 	retsub
 
+// error()void
+abi_route_error:
+	// execute error()void
+	callsub error
+	int 1
+	return
+
+error:
+	proto 0 0
+	err
+
 abi_route_createApplication:
 	int 1
 	return
@@ -63,8 +74,9 @@ create_NoOp:
 
 call_NoOp:
 	method "dummy()void"
+	method "error()void"
 	txna ApplicationArgs 0
-	match abi_route_dummy
+	match abi_route_dummy abi_route_error
 	err
 
 call_OptIn:

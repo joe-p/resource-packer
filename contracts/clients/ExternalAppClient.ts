@@ -36,6 +36,11 @@ export const APP_SPEC: AppSpec = {
         "no_op": "CALL"
       }
     },
+    "error()void": {
+      "call_config": {
+        "no_op": "CALL"
+      }
+    },
     "createApplication()void": {
       "call_config": {
         "no_op": "CREATE"
@@ -75,7 +80,7 @@ export const APP_SPEC: AppSpec = {
     }
   },
   "source": {
-    "approval": "I3ByYWdtYSB2ZXJzaW9uIDkKCi8vIFRoaXMgVEVBTCB3YXMgZ2VuZXJhdGVkIGJ5IFRFQUxTY3JpcHQgdjAuNjMuMAovLyBodHRwczovL2dpdGh1Yi5jb20vYWxnb3JhbmRmb3VuZGF0aW9uL1RFQUxTY3JpcHQKCi8vIFRoaXMgY29udHJhY3QgaXMgY29tcGxpYW50IHdpdGggYW5kL29yIGltcGxlbWVudHMgdGhlIGZvbGxvd2luZyBBUkNzOiBbIEFSQzQgXQoKLy8gVGhlIGZvbGxvd2luZyB0ZW4gbGluZXMgb2YgVEVBTCBoYW5kbGUgaW5pdGlhbCBwcm9ncmFtIGZsb3cKLy8gVGhpcyBwYXR0ZXJuIGlzIHVzZWQgdG8gbWFrZSBpdCBlYXN5IGZvciBhbnlvbmUgdG8gcGFyc2UgdGhlIHN0YXJ0IG9mIHRoZSBwcm9ncmFtIGFuZCBkZXRlcm1pbmUgaWYgYSBzcGVjaWZpYyBhY3Rpb24gaXMgYWxsb3dlZAovLyBIZXJlLCBhY3Rpb24gcmVmZXJzIHRvIHRoZSBPbkNvbXBsZXRlIGluIGNvbWJpbmF0aW9uIHdpdGggd2hldGhlciB0aGUgYXBwIGlzIGJlaW5nIGNyZWF0ZWQgb3IgY2FsbGVkCi8vIEV2ZXJ5IHBvc3NpYmxlIGFjdGlvbiBmb3IgdGhpcyBjb250cmFjdCBpcyByZXByZXNlbnRlZCBpbiB0aGUgc3dpdGNoIHN0YXRlbWVudAovLyBJZiB0aGUgYWN0aW9uIGlzIG5vdCBpbXBsbWVudGVkIGluIHRoZSBjb250cmFjdCwgaXRzIHJlcHNlY3RpdmUgYnJhbmNoIHdpbGwgYmUgIk5PVF9JTVBMTUVOVEVEIiB3aGljaCBqdXN0IGNvbnRhaW5zICJlcnIiCnR4biBBcHBsaWNhdGlvbklECmludCAwCj4KaW50IDYKKgp0eG4gT25Db21wbGV0aW9uCisKc3dpdGNoIGNyZWF0ZV9Ob09wIE5PVF9JTVBMRU1FTlRFRCBOT1RfSU1QTEVNRU5URUQgTk9UX0lNUExFTUVOVEVEIE5PVF9JTVBMRU1FTlRFRCBOT1RfSU1QTEVNRU5URUQgY2FsbF9Ob09wIGNhbGxfT3B0SW4KCk5PVF9JTVBMRU1FTlRFRDoKCWVycgoKLy8gb3B0SW5Ub0FwcGxpY2F0aW9uKCl2b2lkCmFiaV9yb3V0ZV9vcHRJblRvQXBwbGljYXRpb246CgkvLyBleGVjdXRlIG9wdEluVG9BcHBsaWNhdGlvbigpdm9pZAoJY2FsbHN1YiBvcHRJblRvQXBwbGljYXRpb24KCWludCAxCglyZXR1cm4KCm9wdEluVG9BcHBsaWNhdGlvbjoKCXByb3RvIDAgMAoKCS8vIGNvbnRyYWN0cy9yZXNvdXJjZS1wYWNrZXIuYWxnby50czo3CgkvLyB0aGlzLmxvY2FsS2V5KHRoaXMudHhuLnNlbmRlcikudmFsdWUgPSAnZm9vJwoJdHhuIFNlbmRlcgoJYnl0ZSAweDZjNmY2MzYxNmM0YjY1NzkgLy8gImxvY2FsS2V5IgoJYnl0ZSAweDY2NmY2ZiAvLyAiZm9vIgoJYXBwX2xvY2FsX3B1dAoJcmV0c3ViCgovLyBkdW1teSgpdm9pZAphYmlfcm91dGVfZHVtbXk6CgkvLyBleGVjdXRlIGR1bW15KCl2b2lkCgljYWxsc3ViIGR1bW15CglpbnQgMQoJcmV0dXJuCgpkdW1teToKCXByb3RvIDAgMAoJcmV0c3ViCgphYmlfcm91dGVfY3JlYXRlQXBwbGljYXRpb246CglpbnQgMQoJcmV0dXJuCgpjcmVhdGVfTm9PcDoKCW1ldGhvZCAiY3JlYXRlQXBwbGljYXRpb24oKXZvaWQiCgl0eG5hIEFwcGxpY2F0aW9uQXJncyAwCgltYXRjaCBhYmlfcm91dGVfY3JlYXRlQXBwbGljYXRpb24KCWVycgoKY2FsbF9Ob09wOgoJbWV0aG9kICJkdW1teSgpdm9pZCIKCXR4bmEgQXBwbGljYXRpb25BcmdzIDAKCW1hdGNoIGFiaV9yb3V0ZV9kdW1teQoJZXJyCgpjYWxsX09wdEluOgoJbWV0aG9kICJvcHRJblRvQXBwbGljYXRpb24oKXZvaWQiCgl0eG5hIEFwcGxpY2F0aW9uQXJncyAwCgltYXRjaCBhYmlfcm91dGVfb3B0SW5Ub0FwcGxpY2F0aW9uCgllcnI=",
+    "approval": "I3ByYWdtYSB2ZXJzaW9uIDkKCi8vIFRoaXMgVEVBTCB3YXMgZ2VuZXJhdGVkIGJ5IFRFQUxTY3JpcHQgdjAuNjMuMAovLyBodHRwczovL2dpdGh1Yi5jb20vYWxnb3JhbmRmb3VuZGF0aW9uL1RFQUxTY3JpcHQKCi8vIFRoaXMgY29udHJhY3QgaXMgY29tcGxpYW50IHdpdGggYW5kL29yIGltcGxlbWVudHMgdGhlIGZvbGxvd2luZyBBUkNzOiBbIEFSQzQgXQoKLy8gVGhlIGZvbGxvd2luZyB0ZW4gbGluZXMgb2YgVEVBTCBoYW5kbGUgaW5pdGlhbCBwcm9ncmFtIGZsb3cKLy8gVGhpcyBwYXR0ZXJuIGlzIHVzZWQgdG8gbWFrZSBpdCBlYXN5IGZvciBhbnlvbmUgdG8gcGFyc2UgdGhlIHN0YXJ0IG9mIHRoZSBwcm9ncmFtIGFuZCBkZXRlcm1pbmUgaWYgYSBzcGVjaWZpYyBhY3Rpb24gaXMgYWxsb3dlZAovLyBIZXJlLCBhY3Rpb24gcmVmZXJzIHRvIHRoZSBPbkNvbXBsZXRlIGluIGNvbWJpbmF0aW9uIHdpdGggd2hldGhlciB0aGUgYXBwIGlzIGJlaW5nIGNyZWF0ZWQgb3IgY2FsbGVkCi8vIEV2ZXJ5IHBvc3NpYmxlIGFjdGlvbiBmb3IgdGhpcyBjb250cmFjdCBpcyByZXByZXNlbnRlZCBpbiB0aGUgc3dpdGNoIHN0YXRlbWVudAovLyBJZiB0aGUgYWN0aW9uIGlzIG5vdCBpbXBsbWVudGVkIGluIHRoZSBjb250cmFjdCwgaXRzIHJlcHNlY3RpdmUgYnJhbmNoIHdpbGwgYmUgIk5PVF9JTVBMTUVOVEVEIiB3aGljaCBqdXN0IGNvbnRhaW5zICJlcnIiCnR4biBBcHBsaWNhdGlvbklECmludCAwCj4KaW50IDYKKgp0eG4gT25Db21wbGV0aW9uCisKc3dpdGNoIGNyZWF0ZV9Ob09wIE5PVF9JTVBMRU1FTlRFRCBOT1RfSU1QTEVNRU5URUQgTk9UX0lNUExFTUVOVEVEIE5PVF9JTVBMRU1FTlRFRCBOT1RfSU1QTEVNRU5URUQgY2FsbF9Ob09wIGNhbGxfT3B0SW4KCk5PVF9JTVBMRU1FTlRFRDoKCWVycgoKLy8gb3B0SW5Ub0FwcGxpY2F0aW9uKCl2b2lkCmFiaV9yb3V0ZV9vcHRJblRvQXBwbGljYXRpb246CgkvLyBleGVjdXRlIG9wdEluVG9BcHBsaWNhdGlvbigpdm9pZAoJY2FsbHN1YiBvcHRJblRvQXBwbGljYXRpb24KCWludCAxCglyZXR1cm4KCm9wdEluVG9BcHBsaWNhdGlvbjoKCXByb3RvIDAgMAoKCS8vIGNvbnRyYWN0cy9yZXNvdXJjZS1wYWNrZXIuYWxnby50czo3CgkvLyB0aGlzLmxvY2FsS2V5KHRoaXMudHhuLnNlbmRlcikudmFsdWUgPSAnZm9vJwoJdHhuIFNlbmRlcgoJYnl0ZSAweDZjNmY2MzYxNmM0YjY1NzkgLy8gImxvY2FsS2V5IgoJYnl0ZSAweDY2NmY2ZiAvLyAiZm9vIgoJYXBwX2xvY2FsX3B1dAoJcmV0c3ViCgovLyBkdW1teSgpdm9pZAphYmlfcm91dGVfZHVtbXk6CgkvLyBleGVjdXRlIGR1bW15KCl2b2lkCgljYWxsc3ViIGR1bW15CglpbnQgMQoJcmV0dXJuCgpkdW1teToKCXByb3RvIDAgMAoJcmV0c3ViCgovLyBlcnJvcigpdm9pZAphYmlfcm91dGVfZXJyb3I6CgkvLyBleGVjdXRlIGVycm9yKCl2b2lkCgljYWxsc3ViIGVycm9yCglpbnQgMQoJcmV0dXJuCgplcnJvcjoKCXByb3RvIDAgMAoJZXJyCgphYmlfcm91dGVfY3JlYXRlQXBwbGljYXRpb246CglpbnQgMQoJcmV0dXJuCgpjcmVhdGVfTm9PcDoKCW1ldGhvZCAiY3JlYXRlQXBwbGljYXRpb24oKXZvaWQiCgl0eG5hIEFwcGxpY2F0aW9uQXJncyAwCgltYXRjaCBhYmlfcm91dGVfY3JlYXRlQXBwbGljYXRpb24KCWVycgoKY2FsbF9Ob09wOgoJbWV0aG9kICJkdW1teSgpdm9pZCIKCW1ldGhvZCAiZXJyb3IoKXZvaWQiCgl0eG5hIEFwcGxpY2F0aW9uQXJncyAwCgltYXRjaCBhYmlfcm91dGVfZHVtbXkgYWJpX3JvdXRlX2Vycm9yCgllcnIKCmNhbGxfT3B0SW46CgltZXRob2QgIm9wdEluVG9BcHBsaWNhdGlvbigpdm9pZCIKCXR4bmEgQXBwbGljYXRpb25BcmdzIDAKCW1hdGNoIGFiaV9yb3V0ZV9vcHRJblRvQXBwbGljYXRpb24KCWVycg==",
     "clear": "I3ByYWdtYSB2ZXJzaW9uIDk="
   },
   "contract": {
@@ -93,6 +98,15 @@ export const APP_SPEC: AppSpec = {
       },
       {
         "name": "dummy",
+        "args": [],
+        "desc": "",
+        "returns": {
+          "type": "void",
+          "desc": ""
+        }
+      },
+      {
+        "name": "error",
         "args": [],
         "desc": "",
         "returns": {
@@ -175,6 +189,12 @@ export type ExternalApp = {
       returns: void
     }>
     & Record<'dummy()void' | 'dummy', {
+      argsObj: {
+      }
+      argsTuple: []
+      returns: void
+    }>
+    & Record<'error()void' | 'error', {
       argsObj: {
       }
       argsTuple: []
@@ -298,6 +318,20 @@ export abstract class ExternalAppCallFactory {
   static dummy(args: MethodArgs<'dummy()void'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
     return {
       method: 'dummy()void' as const,
+      methodArgs: Array.isArray(args) ? args : [],
+      ...params,
+    }
+  }
+  /**
+   * Constructs a no op call for the error()void ABI method
+   *
+   * @param args Any args for the contract call
+   * @param params Any additional parameters for the call
+   * @returns A TypedCallParams object for the call
+   */
+  static error(args: MethodArgs<'error()void'>, params: AppClientCallCoreParams & CoreAppCallArgs) {
+    return {
+      method: 'error()void' as const,
       methodArgs: Array.isArray(args) ? args : [],
       ...params,
     }
@@ -432,6 +466,17 @@ export class ExternalAppClient {
   }
 
   /**
+   * Calls the error()void ABI method.
+   *
+   * @param args The arguments for the contract call
+   * @param params Any additional parameters for the call
+   * @returns The result of the call
+   */
+  public error(args: MethodArgs<'error()void'>, params: AppClientCallCoreParams & CoreAppCallArgs = {}) {
+    return this.call(ExternalAppCallFactory.error(args, params))
+  }
+
+  /**
    * Extracts a binary state value out of an AppState dictionary
    *
    * @param state The state dictionary containing the state value
@@ -500,6 +545,11 @@ export class ExternalAppClient {
         resultMappers.push(undefined)
         return this
       },
+      error(args: MethodArgs<'error()void'>, params?: AppClientCallCoreParams & CoreAppCallArgs) {
+        promiseChain = promiseChain.then(() => client.error(args, {...params, sendParams: {...params?.sendParams, skipSending: true, atc}}))
+        resultMappers.push(undefined)
+        return this
+      },
       get optIn() {
         const $this = this
         return {
@@ -543,6 +593,15 @@ export type ExternalAppComposer<TReturns extends [...any[]] = []> = {
    * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
    */
   dummy(args: MethodArgs<'dummy()void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): ExternalAppComposer<[...TReturns, MethodReturn<'dummy()void'>]>
+
+  /**
+   * Calls the error()void ABI method.
+   *
+   * @param args The arguments for the contract call
+   * @param params Any additional parameters for the call
+   * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
+   */
+  error(args: MethodArgs<'error()void'>, params?: AppClientCallCoreParams & CoreAppCallArgs): ExternalAppComposer<[...TReturns, MethodReturn<'error()void'>]>
 
   /**
    * Gets available optIn methods

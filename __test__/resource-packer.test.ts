@@ -12,12 +12,19 @@ async function getUnnamedResourcesAccessed(algod: algosdk.Algodv2, atc: algosdk.
     allowUnnamedResources: true,
   });
 
-  // TODO: handle logic errors somehow... maybe throwing an error?
   const result = await atc.simulate(algod, simReq);
 
+  const groupResponse = result.simulateResponse.txnGroups[0];
+
+  if (groupResponse.failureMessage) {
+    throw Error(
+      `Error during resource packing simulation in transaction ${groupResponse.failedAt}: ${groupResponse.failureMessage}`
+    );
+  }
+
   return {
-    group: result.simulateResponse.txnGroups[0].unnamedResourcesAccessed,
-    txns: result.simulateResponse.txnGroups[0].txnResults.map(
+    group: groupResponse.unnamedResourcesAccessed,
+    txns: groupResponse.txnResults.map(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (t: any) => t.unnamedResourcesAccessed
     ) as algosdk.modelsv2.SimulateUnnamedResourcesAccessed[],
@@ -297,3 +304,35 @@ const tests = (version: 8 | 9) => () => {
 
 describe('Resource Packer: AVM8', tests(8));
 describe('Resource Packer: AVM9', tests(9));
+
+describe('meta', () => {
+  const fixture = algorandFixture();
+
+  let externalClient: ExternalAppClient;
+
+  beforeEach(fixture.beforeEach);
+
+  beforeAll(async () => {
+    await fixture.beforeEach();
+    const { testAccount, algod } = fixture.context;
+
+    externalClient = new ExternalAppClient(
+      {
+        sender: testAccount,
+        resolveBy: 'id',
+        id: 0,
+      },
+      algod
+    );
+
+    await externalClient.create.createApplication({});
+  });
+
+  test('error during simulate', async () => {
+    const atc = await externalClient.compose().error({}).atc();
+
+    await expect(packResources(fixture.context.algod, atc)).rejects.toThrow(
+      'Error during resource packing simulation in transaction 0'
+    );
+  });
+});

@@ -8,6 +8,10 @@ class ExternalApp extends Contract {
   }
 
   dummy(): void {}
+
+  error(): void {
+    throw Error();
+  }
 }
 
 // eslint-disable-next-line no-unused-vars
