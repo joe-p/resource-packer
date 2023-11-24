@@ -56,4 +56,8 @@ class ResourcePackerv8 extends Contract {
   assetTotal(): void {
     assert(this.asa.value.total);
   }
+
+  hasAsset(addr: Address): void {
+    assert(!addr.hasAsset(this.asa.value));
+  }
 }

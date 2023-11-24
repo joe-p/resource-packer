@@ -232,6 +232,36 @@ assetTotal:
 	assert
 	retsub
 
+// hasAsset(address)void
+abi_route_hasAsset:
+	// addr: address
+	txna ApplicationArgs 1
+	dup
+	len
+	int 32
+	==
+	assert
+
+	// execute hasAsset(address)void
+	callsub hasAsset
+	int 1
+	return
+
+hasAsset:
+	proto 1 0
+
+	// contracts/resource-packer.algo.ts:61
+	// assert(!addr.hasAsset(this.asa.value))
+	frame_dig -1 // addr: address
+	byte 0x617361 // "asa"
+	app_global_get
+	asset_holding_get AssetBalance
+	swap
+	pop
+	!
+	assert
+	retsub
+
 abi_route_createApplication:
 	int 1
 	return
@@ -249,6 +279,7 @@ call_NoOp:
 	method "mediumBox()void"
 	method "externalAppCall()void"
 	method "assetTotal()void"
+	method "hasAsset(address)void"
 	txna ApplicationArgs 0
-	match abi_route_bootstrap abi_route_addressBalance abi_route_smallBox abi_route_mediumBox abi_route_externalAppCall abi_route_assetTotal
+	match abi_route_bootstrap abi_route_addressBalance abi_route_smallBox abi_route_mediumBox abi_route_externalAppCall abi_route_assetTotal abi_route_hasAsset
 	err

@@ -194,16 +194,33 @@ describe('ResourcePacker', () => {
     });
   });
 
-  describe.only('assets', () => {
+  describe('assets', () => {
     test('assetTotal: unavailable Asset', async () => {
       const { testAccount } = fixture.context;
       alice = testAccount;
-      await expect(v8Client.assetTotal({ addr: testAccount.addr })).rejects.toThrow('unavailable Asset');
+      await expect(v8Client.assetTotal({})).rejects.toThrow('unavailable Asset');
     });
 
     test('assetTotal', async () => {
       const { algod } = fixture.context;
       const atc = await v8Client.compose().assetTotal({}).atc();
+
+      const packedAtc = await packResources(fixture.context.algod, atc);
+
+      await packedAtc.execute(algod, 3);
+    });
+  });
+
+  describe('cross-product references', () => {
+    test('hasAsset: invalid Account reference', async () => {
+      const { testAccount } = fixture.context;
+      alice = testAccount;
+      await expect(v8Client.hasAsset({ addr: testAccount.addr })).rejects.toThrow('invalid Account reference');
+    });
+
+    test('hasAsset', async () => {
+      const { algod, testAccount } = fixture.context;
+      const atc = await v8Client.compose().hasAsset({ addr: testAccount.addr }).atc();
 
       const packedAtc = await packResources(fixture.context.algod, atc);
 
