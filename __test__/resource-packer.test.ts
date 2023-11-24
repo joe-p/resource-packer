@@ -27,7 +27,10 @@ async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicTransact
   const unnamedResourcesAccessed = await getUnnamedResourcesAccessed(algod, atc);
   const group = atc.buildGroup();
 
-  const findTxnBelowRefLimit = (txns: algosdk.TransactionWithSigner[], type: 'account' | 'other' = 'other') => {
+  const findTxnBelowRefLimit = (
+    txns: algosdk.TransactionWithSigner[],
+    type: 'account' | 'assetHolding' | 'other' = 'other'
+  ) => {
     const txnIndex = txns.findIndex((t) => {
       const accounts = t.txn.appAccounts?.length || 0;
       if (type === 'account') return accounts < 4;
@@ -35,6 +38,10 @@ async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicTransact
       const assets = t.txn.appForeignAssets?.length || 0;
       const apps = t.txn.appForeignApps?.length || 0;
       const boxes = t.txn.boxes?.length || 0;
+
+      if (type === 'assetHolding') {
+        return accounts + assets + apps + boxes < 7 && accounts < 4;
+      }
 
       return accounts + assets + apps + boxes < 8;
     });
@@ -52,7 +59,12 @@ async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicTransact
   if (g) {
     // TODO: Support all of these
     if (g.appLocals) throw Error('Group App locals not yet supported');
-    if (g.assetHoldings) throw Error('Group asset holdings not yet supported');
+
+    g.assetHoldings?.forEach((a) => {
+      const txnIndex = findTxnBelowRefLimit(group, 'assetHolding');
+      group[txnIndex].txn.appForeignAssets?.push(Number(a.asset));
+      group[txnIndex].txn.appAccounts?.push(algosdk.decodeAddress(a.account));
+    });
 
     g.boxes?.forEach((b) => {
       const txnIndex = findTxnBelowRefLimit(group);
@@ -154,7 +166,7 @@ const tests = (version: 8 | 9) => () => {
 
   let alice: algosdk.Account;
 
-  describe.only('accounts', () => {
+  describe('accounts', () => {
     test('addressBalance: invalid Account reference', async () => {
       const { testAccount } = fixture.context;
       alice = testAccount;
@@ -235,10 +247,12 @@ const tests = (version: 8 | 9) => () => {
   });
 
   describe('cross-product references', () => {
-    test('hasAsset: invalid Account reference', async () => {
+    const hasAssetErrorMsg = version === 8 ? 'invalid Account reference' : 'unavailable Account';
+
+    test(`hasAsset: ${hasAssetErrorMsg}`, async () => {
       const { testAccount } = fixture.context;
       alice = testAccount;
-      await expect(appClient.hasAsset({ addr: testAccount.addr })).rejects.toThrow('invalid Account reference');
+      await expect(appClient.hasAsset({ addr: testAccount.addr })).rejects.toThrow(hasAssetErrorMsg);
     });
 
     test('hasAsset', async () => {
@@ -253,4 +267,4 @@ const tests = (version: 8 | 9) => () => {
 };
 
 describe('Resource Packer: AVM8', tests(8));
-describe.only('Resource Packer: AVM9', tests(9));
+describe('Resource Packer: AVM9', tests(9));
