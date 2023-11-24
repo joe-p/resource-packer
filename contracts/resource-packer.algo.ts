@@ -1,6 +1,6 @@
 import { Contract } from '@algorandfoundation/tealscript';
 
-class ExternalAppV8 extends Contract {
+class ExternalApp extends Contract {
   dummy(): void {}
 }
 
@@ -19,12 +19,12 @@ class ResourcePackerv8 extends Contract {
   bootstrap(): void {
     sendMethodCall<[], void>({
       name: 'createApplication',
-      approvalProgram: ExternalAppV8.approvalProgram(),
-      clearStateProgram: ExternalAppV8.clearProgram(),
-      localNumByteSlice: ExternalAppV8.schema.local.numByteSlice,
-      globalNumByteSlice: ExternalAppV8.schema.global.numByteSlice,
-      globalNumUint: ExternalAppV8.schema.global.numUint,
-      localNumUint: ExternalAppV8.schema.local.numUint,
+      approvalProgram: ExternalApp.approvalProgram(),
+      clearStateProgram: ExternalApp.clearProgram(),
+      localNumByteSlice: ExternalApp.schema.local.numByteSlice,
+      globalNumByteSlice: ExternalApp.schema.global.numByteSlice,
+      globalNumUint: ExternalApp.schema.global.numUint,
+      localNumUint: ExternalApp.schema.local.numUint,
     });
 
     this.externalAppID.value = this.itxn.createdApplicationID;

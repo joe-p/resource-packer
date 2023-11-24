@@ -43,7 +43,7 @@
     "clear": "I3ByYWdtYSB2ZXJzaW9uIDk="
   },
   "contract": {
-    "name": "ExternalAppV8",
+    "name": "ExternalApp",
     "desc": "",
     "methods": [
       {

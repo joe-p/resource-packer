@@ -35,12 +35,12 @@ bootstrap:
 	// contracts/resource-packer.algo.ts:20
 	// sendMethodCall<[], void>({
 	//       name: 'createApplication',
-	//       approvalProgram: ExternalAppV8.approvalProgram(),
-	//       clearStateProgram: ExternalAppV8.clearProgram(),
-	//       localNumByteSlice: ExternalAppV8.schema.local.numByteSlice,
-	//       globalNumByteSlice: ExternalAppV8.schema.global.numByteSlice,
-	//       globalNumUint: ExternalAppV8.schema.global.numUint,
-	//       localNumUint: ExternalAppV8.schema.local.numUint,
+	//       approvalProgram: ExternalApp.approvalProgram(),
+	//       clearStateProgram: ExternalApp.clearProgram(),
+	//       localNumByteSlice: ExternalApp.schema.local.numByteSlice,
+	//       globalNumByteSlice: ExternalApp.schema.global.numByteSlice,
+	//       globalNumUint: ExternalApp.schema.global.numUint,
+	//       localNumUint: ExternalApp.schema.local.numUint,
 	//     })
 	itxn_begin
 	int appl
@@ -49,32 +49,32 @@ bootstrap:
 	itxn_field ApplicationArgs
 
 	// contracts/resource-packer.algo.ts:22
-	// approvalProgram: ExternalAppV8.approvalProgram()
+	// approvalProgram: ExternalApp.approvalProgram()
 	byte b64 CSABATEYgQANgQYLMRkIjQcADAAAAAAAAAAAAAAAGgCIAAIiQ4oAAIkiQ4AEuER7NjYaAI4B//EAgASjDOf/NhoAjgH/2gA=
 	itxn_field ApprovalProgram
 
 	// contracts/resource-packer.algo.ts:23
-	// clearStateProgram: ExternalAppV8.clearProgram()
+	// clearStateProgram: ExternalApp.clearProgram()
 	byte b64 CQ==
 	itxn_field ClearStateProgram
 
 	// contracts/resource-packer.algo.ts:24
-	// localNumByteSlice: ExternalAppV8.schema.local.numByteSlice
+	// localNumByteSlice: ExternalApp.schema.local.numByteSlice
 	int 0
 	itxn_field LocalNumByteSlice
 
 	// contracts/resource-packer.algo.ts:25
-	// globalNumByteSlice: ExternalAppV8.schema.global.numByteSlice
+	// globalNumByteSlice: ExternalApp.schema.global.numByteSlice
 	int 0
 	itxn_field GlobalNumByteSlice
 
 	// contracts/resource-packer.algo.ts:26
-	// globalNumUint: ExternalAppV8.schema.global.numUint
+	// globalNumUint: ExternalApp.schema.global.numUint
 	int 0
 	itxn_field GlobalNumUint
 
 	// contracts/resource-packer.algo.ts:27
-	// localNumUint: ExternalAppV8.schema.local.numUint
+	// localNumUint: ExternalApp.schema.local.numUint
 	int 0
 	itxn_field LocalNumUint
 
