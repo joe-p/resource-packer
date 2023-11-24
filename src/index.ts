@@ -31,7 +31,7 @@ export async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicT
 
   const findTxnBelowRefLimit = (
     txns: algosdk.TransactionWithSigner[],
-    type: 'account' | 'assetHolding' | 'other' = 'other'
+    type: 'account' | 'assetHolding' | 'appLocal' | 'other' = 'other'
   ) => {
     const txnIndex = txns.findIndex((t) => {
       const accounts = t.txn.appAccounts?.length || 0;
@@ -43,6 +43,10 @@ export async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicT
 
       if (type === 'assetHolding') {
         return accounts + assets + apps + boxes < 7 && accounts < 4;
+      }
+
+      if (type === 'appLocal') {
+        return accounts + assets + apps + boxes < 7;
       }
 
       return accounts + assets + apps + boxes < 8;
@@ -60,7 +64,7 @@ export async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicT
 
   if (g) {
     g.appLocals?.forEach((a) => {
-      const txnIndex = findTxnBelowRefLimit(group, 'assetHolding');
+      const txnIndex = findTxnBelowRefLimit(group, 'appLocal');
       group[txnIndex].txn.appForeignApps?.push(Number(a.app));
       group[txnIndex].txn.appAccounts?.push(algosdk.decodeAddress(a.account));
     });
