@@ -78,6 +78,21 @@
       }
     },
     {
+      "name": "externalLocal",
+      "args": [
+        {
+          "name": "addr",
+          "type": "address",
+          "desc": ""
+        }
+      ],
+      "desc": "",
+      "returns": {
+        "type": "void",
+        "desc": ""
+      }
+    },
+    {
       "name": "createApplication",
       "desc": "",
       "returns": {

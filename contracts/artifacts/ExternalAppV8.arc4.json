@@ -1,16 +1,7 @@
 {
-  "name": "ExternalApp",
+  "name": "ExternalAppV8",
   "desc": "",
   "methods": [
-    {
-      "name": "optInToApplication",
-      "args": [],
-      "desc": "",
-      "returns": {
-        "type": "void",
-        "desc": ""
-      }
-    },
     {
       "name": "dummy",
       "args": [],

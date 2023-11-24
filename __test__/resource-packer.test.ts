@@ -4,6 +4,7 @@ import algosdk from 'algosdk';
 import * as algokit from '@algorandfoundation/algokit-utils';
 import { ResourcePackerv8Client } from '../contracts/clients/ResourcePackerv8Client';
 import { ResourcePackerv9Client } from '../contracts/clients/ResourcePackerv9Client';
+import { ExternalAppClient } from '../contracts/clients/ExternalAppClient';
 
 async function getUnnamedResourcesAccessed(algod: algosdk.Algodv2, atc: algosdk.AtomicTransactionComposer) {
   const simReq = new algosdk.modelsv2.SimulateRequest({
@@ -57,8 +58,11 @@ async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicTransact
   const g = unnamedResourcesAccessed.group;
 
   if (g) {
-    // TODO: Support all of these
-    if (g.appLocals) throw Error('Group App locals not yet supported');
+    g.appLocals?.forEach((a) => {
+      const txnIndex = findTxnBelowRefLimit(group, 'assetHolding');
+      group[txnIndex].txn.appForeignApps?.push(Number(a.app));
+      group[txnIndex].txn.appAccounts?.push(algosdk.decodeAddress(a.account));
+    });
 
     g.assetHoldings?.forEach((a) => {
       const txnIndex = findTxnBelowRefLimit(group, 'assetHolding');
@@ -98,6 +102,8 @@ async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicTransact
     if (r === undefined) return;
 
     if (r.boxes || r.extraBoxRefs) throw Error('Unexpected boxes at the transaction level');
+    if (r.appLocals) throw Error('Unexpected app local at the transaction level');
+    if (r.assetHoldings) throw Error('Unexpected asset holding at the transaction level');
 
     r.accounts?.forEach((a) => {
       group[i].txn.appAccounts?.push(algosdk.decodeAddress(a));
@@ -110,10 +116,6 @@ async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicTransact
     r.assets?.forEach((a) => {
       group[i].txn.appForeignAssets?.push(Number(a));
     });
-
-    // TODO: Support all of these
-    if (r.appLocals) throw Error('App locals not yet supported');
-    if (r.assetHoldings) throw Error('Asset holdings not yet supported');
   });
 
   const newAtc = new algosdk.AtomicTransactionComposer();
@@ -130,6 +132,8 @@ const tests = (version: 8 | 9) => () => {
   const fixture = algorandFixture();
 
   let appClient: ResourcePackerv8Client | ResourcePackerv9Client;
+
+  let externalClient: ExternalAppClient;
 
   beforeEach(fixture.beforeEach);
 
@@ -162,6 +166,15 @@ const tests = (version: 8 | 9) => () => {
     await appClient.appClient.fundAppAccount(algokit.microAlgos(2305800));
 
     await appClient.bootstrap({}, { sendParams: { fee: algokit.microAlgos(3_000) } });
+
+    externalClient = new ExternalAppClient(
+      {
+        sender: testAccount,
+        resolveBy: 'id',
+        id: (await appClient.getGlobalState()).externalAppID!.asBigInt(),
+      },
+      algod
+    );
   });
 
   let alice: algosdk.Account;
@@ -258,6 +271,22 @@ const tests = (version: 8 | 9) => () => {
     test('hasAsset', async () => {
       const { algod, testAccount } = fixture.context;
       const atc = await appClient.compose().hasAsset({ addr: testAccount.addr }).atc();
+
+      const packedAtc = await packResources(fixture.context.algod, atc);
+
+      await packedAtc.execute(algod, 3);
+    });
+
+    test(`externalLocal: ${hasAssetErrorMsg}`, async () => {
+      const { testAccount } = fixture.context;
+      alice = testAccount;
+      await expect(appClient.externalLocal({ addr: testAccount.addr })).rejects.toThrow(hasAssetErrorMsg);
+    });
+
+    test('externalLocal', async () => {
+      const { algod, testAccount } = fixture.context;
+      await externalClient.optIn.optInToApplication({}, { sender: testAccount });
+      const atc = await appClient.compose().externalLocal({ addr: testAccount.addr }).atc();
 
       const packedAtc = await packResources(fixture.context.algod, atc);
 

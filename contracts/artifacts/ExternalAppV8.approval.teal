@@ -17,28 +17,10 @@ int 6
 *
 txn OnCompletion
 +
-switch create_NoOp NOT_IMPLEMENTED NOT_IMPLEMENTED NOT_IMPLEMENTED NOT_IMPLEMENTED NOT_IMPLEMENTED call_NoOp call_OptIn
+switch create_NoOp NOT_IMPLEMENTED NOT_IMPLEMENTED NOT_IMPLEMENTED NOT_IMPLEMENTED NOT_IMPLEMENTED call_NoOp
 
 NOT_IMPLEMENTED:
 	err
-
-// optInToApplication()void
-abi_route_optInToApplication:
-	// execute optInToApplication()void
-	callsub optInToApplication
-	int 1
-	return
-
-optInToApplication:
-	proto 0 0
-
-	// contracts/resource-packer.algo.ts:7
-	// this.localKey(this.txn.sender).value = 'foo'
-	txn Sender
-	byte 0x6c6f63616c4b6579 // "localKey"
-	byte 0x666f6f // "foo"
-	app_local_put
-	retsub
 
 // dummy()void
 abi_route_dummy:
@@ -65,10 +47,4 @@ call_NoOp:
 	method "dummy()void"
 	txna ApplicationArgs 0
 	match abi_route_dummy
-	err
-
-call_OptIn:
-	method "optInToApplication()void"
-	txna ApplicationArgs 0
-	match abi_route_optInToApplication
 	err

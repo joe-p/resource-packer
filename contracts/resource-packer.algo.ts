@@ -1,6 +1,12 @@
 import { Contract } from '@algorandfoundation/tealscript';
 
 class ExternalApp extends Contract {
+  localKey = LocalStateKey<bytes>();
+
+  optInToApplication(): void {
+    this.localKey(this.txn.sender).value = 'foo';
+  }
+
   dummy(): void {}
 }
 
@@ -60,6 +66,10 @@ class ResourcePackerv8 extends Contract {
   hasAsset(addr: Address): void {
     assert(!addr.hasAsset(this.asa.value));
   }
+
+  externalLocal(addr: Address): void {
+    log(addr.state(this.externalAppID.value, 'localKey'));
+  }
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -117,5 +127,9 @@ class ResourcePackerv9 extends Contract {
 
   hasAsset(addr: Address): void {
     assert(!addr.hasAsset(this.asa.value));
+  }
+
+  externalLocal(addr: Address): void {
+    log(addr.state(this.externalAppID.value, 'localKey'));
   }
 }

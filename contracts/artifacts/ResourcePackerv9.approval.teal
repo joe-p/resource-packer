@@ -32,7 +32,7 @@ abi_route_bootstrap:
 bootstrap:
 	proto 0 0
 
-	// contracts/resource-packer.algo.ts:78
+	// contracts/resource-packer.algo.ts:88
 	// sendMethodCall<[], void>({
 	//       name: 'createApplication',
 	//       approvalProgram: ExternalApp.approvalProgram(),
@@ -48,34 +48,34 @@ bootstrap:
 	method "createApplication()void"
 	itxn_field ApplicationArgs
 
-	// contracts/resource-packer.algo.ts:80
+	// contracts/resource-packer.algo.ts:90
 	// approvalProgram: ExternalApp.approvalProgram()
-	byte b64 CSABATEYgQANgQYLMRkIjQcADAAAAAAAAAAAAAAAGgCIAAIiQ4oAAIkiQ4AEuER7NjYaAI4B//EAgASjDOf/NhoAjgH/2gA=
+	byte b64 CSABATEYgQANgQYLMRkIjQgAJwAAAAAAAAAAAAAANQBDAIgAAiJDigAAMQCACGxvY2FsS2V5gANmb29miYgAAiJDigAAiSJDgAS4RHs2NhoAjgH/8QCABKMM5/82GgCOAf/aAIAEAaOj/zYaAI4B/7EA
 	itxn_field ApprovalProgram
 
-	// contracts/resource-packer.algo.ts:81
+	// contracts/resource-packer.algo.ts:91
 	// clearStateProgram: ExternalApp.clearProgram()
 	byte b64 CQ==
 	itxn_field ClearStateProgram
 
-	// contracts/resource-packer.algo.ts:82
+	// contracts/resource-packer.algo.ts:92
 	// localNumByteSlice: ExternalApp.schema.local.numByteSlice
-	int 0
+	int 1
 	itxn_field LocalNumByteSlice
 
-	// contracts/resource-packer.algo.ts:83
+	// contracts/resource-packer.algo.ts:93
 	// globalNumByteSlice: ExternalApp.schema.global.numByteSlice
 	int 0
 	itxn_field GlobalNumByteSlice
 
-	// contracts/resource-packer.algo.ts:84
+	// contracts/resource-packer.algo.ts:94
 	// globalNumUint: ExternalApp.schema.global.numUint
 	int 0
 	itxn_field GlobalNumUint
 
-	// contracts/resource-packer.algo.ts:85
+	// contracts/resource-packer.algo.ts:95
 	// localNumUint: ExternalApp.schema.local.numUint
-	int 0
+	int 1
 	itxn_field LocalNumUint
 
 	// Fee field not set, defaulting to 0
@@ -85,13 +85,13 @@ bootstrap:
 	// Submit inner transaction
 	itxn_submit
 
-	// contracts/resource-packer.algo.ts:88
+	// contracts/resource-packer.algo.ts:98
 	// this.externalAppID.value = this.itxn.createdApplicationID
 	byte 0x65787465726e616c4170704944 // "externalAppID"
 	itxn CreatedApplicationID
 	app_global_put
 
-	// contracts/resource-packer.algo.ts:90
+	// contracts/resource-packer.algo.ts:100
 	// this.asa.value = sendAssetCreation({
 	//       configAssetTotal: 1,
 	//     })
@@ -100,7 +100,7 @@ bootstrap:
 	int acfg
 	itxn_field TypeEnum
 
-	// contracts/resource-packer.algo.ts:91
+	// contracts/resource-packer.algo.ts:101
 	// configAssetTotal: 1
 	int 1
 	itxn_field ConfigAssetTotal
@@ -133,7 +133,7 @@ abi_route_addressBalance:
 addressBalance:
 	proto 1 0
 
-	// contracts/resource-packer.algo.ts:96
+	// contracts/resource-packer.algo.ts:106
 	// assert(addr.balance)
 	frame_dig -1 // addr: address
 	acct_params_get AcctBalance
@@ -151,7 +151,7 @@ abi_route_smallBox:
 smallBox:
 	proto 0 0
 
-	// contracts/resource-packer.algo.ts:100
+	// contracts/resource-packer.algo.ts:110
 	// this.smallBoxKey.value = ''
 	byte 0x73 // "s"
 	byte 0x73 // "s"
@@ -171,7 +171,7 @@ abi_route_mediumBox:
 mediumBox:
 	proto 0 0
 
-	// contracts/resource-packer.algo.ts:104
+	// contracts/resource-packer.algo.ts:114
 	// this.mediumBoxKey.create(5_000)
 	byte 0x6d // "m"
 	int 5_000
@@ -188,7 +188,7 @@ abi_route_externalAppCall:
 externalAppCall:
 	proto 0 0
 
-	// contracts/resource-packer.algo.ts:108
+	// contracts/resource-packer.algo.ts:118
 	// sendMethodCall<[], void>({
 	//       applicationID: this.externalAppID.value,
 	//       name: 'dummy',
@@ -199,7 +199,7 @@ externalAppCall:
 	method "dummy()void"
 	itxn_field ApplicationArgs
 
-	// contracts/resource-packer.algo.ts:109
+	// contracts/resource-packer.algo.ts:119
 	// applicationID: this.externalAppID.value
 	byte 0x65787465726e616c4170704944 // "externalAppID"
 	app_global_get
@@ -223,7 +223,7 @@ abi_route_assetTotal:
 assetTotal:
 	proto 0 0
 
-	// contracts/resource-packer.algo.ts:115
+	// contracts/resource-packer.algo.ts:125
 	// assert(this.asa.value.total)
 	byte 0x617361 // "asa"
 	app_global_get
@@ -250,7 +250,7 @@ abi_route_hasAsset:
 hasAsset:
 	proto 1 0
 
-	// contracts/resource-packer.algo.ts:119
+	// contracts/resource-packer.algo.ts:129
 	// assert(!addr.hasAsset(this.asa.value))
 	frame_dig -1 // addr: address
 	byte 0x617361 // "asa"
@@ -260,6 +260,35 @@ hasAsset:
 	pop
 	!
 	assert
+	retsub
+
+// externalLocal(address)void
+abi_route_externalLocal:
+	// addr: address
+	txna ApplicationArgs 1
+	dup
+	len
+	int 32
+	==
+	assert
+
+	// execute externalLocal(address)void
+	callsub externalLocal
+	int 1
+	return
+
+externalLocal:
+	proto 1 0
+
+	// contracts/resource-packer.algo.ts:133
+	// log(addr.state(this.externalAppID.value, 'localKey'))
+	frame_dig -1 // addr: address
+	byte 0x65787465726e616c4170704944 // "externalAppID"
+	app_global_get
+	byte 0x6c6f63616c4b6579 // "localKey"
+	app_local_get_ex
+	assert
+	log
 	retsub
 
 abi_route_createApplication:
@@ -280,6 +309,7 @@ call_NoOp:
 	method "externalAppCall()void"
 	method "assetTotal()void"
 	method "hasAsset(address)void"
+	method "externalLocal(address)void"
 	txna ApplicationArgs 0
-	match abi_route_bootstrap abi_route_addressBalance abi_route_smallBox abi_route_mediumBox abi_route_externalAppCall abi_route_assetTotal abi_route_hasAsset
+	match abi_route_bootstrap abi_route_addressBalance abi_route_smallBox abi_route_mediumBox abi_route_externalAppCall abi_route_assetTotal abi_route_hasAsset abi_route_externalLocal
 	err
