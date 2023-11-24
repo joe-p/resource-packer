@@ -72,6 +72,8 @@ async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicTransact
   unnamedResourcesAccessed.txns.forEach((r, i) => {
     if (r === undefined) return;
 
+    if (r.boxes || r.extraBoxRefs) throw Error('Unexpected boxes at the transaction level');
+
     r.accounts?.forEach((a) => {
       group[i].txn.appAccounts?.push(algosdk.decodeAddress(a));
     });
@@ -80,12 +82,13 @@ async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicTransact
       group[i].txn.appForeignApps?.push(Number(a));
     });
 
+    r.assets?.forEach((a) => {
+      group[i].txn.appForeignAssets?.push(Number(a));
+    });
+
     // TODO: Support all of these
     if (r.appLocals) throw Error('App locals not yet supported');
     if (r.assetHoldings) throw Error('Asset holdings not yet supported');
-    if (r.assets) throw Error('Assets not yet supported');
-    if (r.boxes) throw Error('Boxes not yet supported');
-    if (r.extraBoxRefs) throw Error('Extra box refs not yet supported');
   });
 
   const newAtc = new algosdk.AtomicTransactionComposer();
@@ -121,9 +124,9 @@ describe('ResourcePacker', () => {
 
     await v8Client.create.createApplication({});
 
-    await v8Client.appClient.fundAppAccount(algokit.microAlgos(2205800));
+    await v8Client.appClient.fundAppAccount(algokit.microAlgos(2305800));
 
-    await v8Client.bootstrap({}, { sendParams: { fee: algokit.microAlgos(2_000) } });
+    await v8Client.bootstrap({}, { sendParams: { fee: algokit.microAlgos(3_000) } });
   });
 
   let alice: algosdk.Account;
@@ -184,6 +187,23 @@ describe('ResourcePacker', () => {
         .compose()
         .externalAppCall({}, { sendParams: { fee: algokit.microAlgos(2_000) } })
         .atc();
+
+      const packedAtc = await packResources(fixture.context.algod, atc);
+
+      await packedAtc.execute(algod, 3);
+    });
+  });
+
+  describe.only('assets', () => {
+    test('assetTotal: unavailable Asset', async () => {
+      const { testAccount } = fixture.context;
+      alice = testAccount;
+      await expect(v8Client.assetTotal({ addr: testAccount.addr })).rejects.toThrow('unavailable Asset');
+    });
+
+    test('assetTotal', async () => {
+      const { algod } = fixture.context;
+      const atc = await v8Client.compose().assetTotal({}).atc();
 
       const packedAtc = await packResources(fixture.context.algod, atc);
 

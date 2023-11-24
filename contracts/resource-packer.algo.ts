@@ -10,6 +10,8 @@ class ResourcePackerv8 extends Contract {
 
   externalAppID = GlobalStateKey<Application>();
 
+  asa = GlobalStateKey<Asset>();
+
   smallBoxKey = BoxKey<bytes>({ key: 's' });
 
   mediumBoxKey = BoxKey<bytes>({ key: 'm' });
@@ -26,6 +28,10 @@ class ResourcePackerv8 extends Contract {
     });
 
     this.externalAppID.value = this.itxn.createdApplicationID;
+
+    this.asa.value = sendAssetCreation({
+      configAssetTotal: 1,
+    });
   }
 
   addressBalance(addr: Address): void {
@@ -45,5 +51,9 @@ class ResourcePackerv8 extends Contract {
       applicationID: this.externalAppID.value,
       name: 'dummy',
     });
+  }
+
+  assetTotal(): void {
+    assert(this.asa.value.total);
   }
 }
