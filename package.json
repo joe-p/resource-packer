@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "generate-client": "algokitgen generate -a contracts/artifacts/ResourcePackerv8.arc32.json -o contracts/clients/ResourcePackerv8Client.ts",
+    "generate-client": "algokitgen generate -a contracts/artifacts/ResourcePackerv8.arc32.json -o contracts/clients/ResourcePackerv8Client.ts && algokitgen generate -a contracts/artifacts/ResourcePackerv9.arc32.json -o contracts/clients/ResourcePackerv9Client.ts",
     "compile-contract": "tealscript contracts/resource-packer.algo.ts contracts/artifacts",
     "build": "npm run compile-contract && npm run generate-client",
     "test": "npm run build && jest",

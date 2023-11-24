@@ -64,7 +64,7 @@ class ResourcePackerv8 extends Contract {
 
 // eslint-disable-next-line no-unused-vars
 class ResourcePackerv9 extends Contract {
-  programVersion = 8;
+  programVersion = 9;
 
   externalAppID = GlobalStateKey<Application>();
 

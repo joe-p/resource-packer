@@ -3,6 +3,7 @@ import { algorandFixture } from '@algorandfoundation/algokit-utils/testing';
 import algosdk from 'algosdk';
 import * as algokit from '@algorandfoundation/algokit-utils';
 import { ResourcePackerv8Client } from '../contracts/clients/ResourcePackerv8Client';
+import { ResourcePackerv9Client } from '../contracts/clients/ResourcePackerv9Client';
 
 async function getUnnamedResourcesAccessed(algod: algosdk.Algodv2, atc: algosdk.AtomicTransactionComposer) {
   const simReq = new algosdk.modelsv2.SimulateRequest({
@@ -26,10 +27,10 @@ async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicTransact
   const unnamedResourcesAccessed = await getUnnamedResourcesAccessed(algod, atc);
   const group = atc.buildGroup();
 
-  const findTxnBelowRefLimit = (txns: algosdk.TransactionWithSigner[], checkAccounts: boolean = false) => {
+  const findTxnBelowRefLimit = (txns: algosdk.TransactionWithSigner[], type: 'account' | 'other' = 'other') => {
     const txnIndex = txns.findIndex((t) => {
       const accounts = t.txn.appAccounts?.length || 0;
-      if (checkAccounts) return accounts < 4;
+      if (type === 'account') return accounts < 4;
 
       const assets = t.txn.appForeignAssets?.length || 0;
       const apps = t.txn.appForeignApps?.length || 0;
@@ -50,15 +51,27 @@ async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicTransact
 
   if (g) {
     // TODO: Support all of these
-    if (g.accounts) throw Error('Group Accounts not yet supported');
     if (g.appLocals) throw Error('Group App locals not yet supported');
-    if (g.apps) throw Error('Group Apps not yet supported');
     if (g.assetHoldings) throw Error('Group asset holdings not yet supported');
-    if (g.assets) throw Error('Group assets not yet supported');
 
     g.boxes?.forEach((b) => {
       const txnIndex = findTxnBelowRefLimit(group);
       group[txnIndex].txn.boxes?.push({ appIndex: Number(b.app), name: b.name });
+    });
+
+    g.assets?.forEach((a) => {
+      const txnIndex = findTxnBelowRefLimit(group);
+      group[txnIndex].txn.appForeignAssets?.push(Number(a));
+    });
+
+    g.accounts?.forEach((a) => {
+      const txnIndex = findTxnBelowRefLimit(group, 'account');
+      group[txnIndex].txn.appAccounts?.push(algosdk.decodeAddress(a));
+    });
+
+    g.apps?.forEach((a) => {
+      const txnIndex = findTxnBelowRefLimit(group);
+      group[txnIndex].txn.appForeignApps?.push(Number(a));
     });
 
     if (g.extraBoxRefs) {
@@ -101,10 +114,10 @@ async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicTransact
 
   return newAtc;
 }
-const tests = () => {
+const tests = (version: 8 | 9) => () => {
   const fixture = algorandFixture();
 
-  let appClient: ResourcePackerv8Client;
+  let appClient: ResourcePackerv8Client | ResourcePackerv9Client;
 
   beforeEach(fixture.beforeEach);
 
@@ -112,14 +125,25 @@ const tests = () => {
     await fixture.beforeEach();
     const { algod, testAccount } = fixture.context;
 
-    appClient = new ResourcePackerv8Client(
-      {
-        sender: testAccount,
-        resolveBy: 'id',
-        id: 0,
-      },
-      algod
-    );
+    if (version === 8) {
+      appClient = new ResourcePackerv8Client(
+        {
+          sender: testAccount,
+          resolveBy: 'id',
+          id: 0,
+        },
+        algod
+      );
+    } else {
+      appClient = new ResourcePackerv9Client(
+        {
+          sender: testAccount,
+          resolveBy: 'id',
+          id: 0,
+        },
+        algod
+      );
+    }
 
     await appClient.create.createApplication({});
 
@@ -130,7 +154,7 @@ const tests = () => {
 
   let alice: algosdk.Account;
 
-  describe('accounts', () => {
+  describe.only('accounts', () => {
     test('addressBalance: invalid Account reference', async () => {
       const { testAccount } = fixture.context;
       alice = testAccount;
@@ -228,4 +252,5 @@ const tests = () => {
   });
 };
 
-describe('Resource Packer: AVM8', tests);
+describe('Resource Packer: AVM8', tests(8));
+describe.only('Resource Packer: AVM9', tests(9));
