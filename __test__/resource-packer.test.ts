@@ -101,11 +101,10 @@ async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicTransact
 
   return newAtc;
 }
-
-describe('ResourcePacker', () => {
+const tests = () => {
   const fixture = algorandFixture();
 
-  let v8Client: ResourcePackerv8Client;
+  let appClient: ResourcePackerv8Client;
 
   beforeEach(fixture.beforeEach);
 
@@ -113,7 +112,7 @@ describe('ResourcePacker', () => {
     await fixture.beforeEach();
     const { algod, testAccount } = fixture.context;
 
-    v8Client = new ResourcePackerv8Client(
+    appClient = new ResourcePackerv8Client(
       {
         sender: testAccount,
         resolveBy: 'id',
@@ -122,11 +121,11 @@ describe('ResourcePacker', () => {
       algod
     );
 
-    await v8Client.create.createApplication({});
+    await appClient.create.createApplication({});
 
-    await v8Client.appClient.fundAppAccount(algokit.microAlgos(2305800));
+    await appClient.appClient.fundAppAccount(algokit.microAlgos(2305800));
 
-    await v8Client.bootstrap({}, { sendParams: { fee: algokit.microAlgos(3_000) } });
+    await appClient.bootstrap({}, { sendParams: { fee: algokit.microAlgos(3_000) } });
   });
 
   let alice: algosdk.Account;
@@ -135,12 +134,12 @@ describe('ResourcePacker', () => {
     test('addressBalance: invalid Account reference', async () => {
       const { testAccount } = fixture.context;
       alice = testAccount;
-      await expect(v8Client.addressBalance({ addr: testAccount.addr })).rejects.toThrow('invalid Account reference');
+      await expect(appClient.addressBalance({ addr: testAccount.addr })).rejects.toThrow('invalid Account reference');
     });
 
     test('addressBalance', async () => {
       const { algod, testAccount } = fixture.context;
-      const atc = await v8Client
+      const atc = await appClient
         .compose()
         .addressBalance({ addr: testAccount.addr })
         .addressBalance({ addr: alice.addr })
@@ -154,12 +153,12 @@ describe('ResourcePacker', () => {
 
   describe('boxes', () => {
     test('smallBox: invalid Box reference', async () => {
-      await expect(v8Client.smallBox({})).rejects.toThrow('invalid Box reference');
+      await expect(appClient.smallBox({})).rejects.toThrow('invalid Box reference');
     });
 
     test('smallBox', async () => {
       const { algod } = fixture.context;
-      const atc = await v8Client.compose().smallBox({}).atc();
+      const atc = await appClient.compose().smallBox({}).atc();
 
       const packedAtc = await packResources(fixture.context.algod, atc);
 
@@ -168,7 +167,7 @@ describe('ResourcePacker', () => {
 
     test('mediumBox', async () => {
       const { algod } = fixture.context;
-      const atc = await v8Client.compose().mediumBox({}).atc();
+      const atc = await appClient.compose().mediumBox({}).atc();
 
       const packedAtc = await packResources(fixture.context.algod, atc);
 
@@ -178,12 +177,12 @@ describe('ResourcePacker', () => {
 
   describe('apps', () => {
     test('externalAppCall: unavailable App', async () => {
-      await expect(v8Client.externalAppCall({})).rejects.toThrow('unavailable App');
+      await expect(appClient.externalAppCall({})).rejects.toThrow('unavailable App');
     });
 
     test('externalAppCall', async () => {
       const { algod } = fixture.context;
-      const atc = await v8Client
+      const atc = await appClient
         .compose()
         .externalAppCall({}, { sendParams: { fee: algokit.microAlgos(2_000) } })
         .atc();
@@ -198,12 +197,12 @@ describe('ResourcePacker', () => {
     test('assetTotal: unavailable Asset', async () => {
       const { testAccount } = fixture.context;
       alice = testAccount;
-      await expect(v8Client.assetTotal({})).rejects.toThrow('unavailable Asset');
+      await expect(appClient.assetTotal({})).rejects.toThrow('unavailable Asset');
     });
 
     test('assetTotal', async () => {
       const { algod } = fixture.context;
-      const atc = await v8Client.compose().assetTotal({}).atc();
+      const atc = await appClient.compose().assetTotal({}).atc();
 
       const packedAtc = await packResources(fixture.context.algod, atc);
 
@@ -215,16 +214,18 @@ describe('ResourcePacker', () => {
     test('hasAsset: invalid Account reference', async () => {
       const { testAccount } = fixture.context;
       alice = testAccount;
-      await expect(v8Client.hasAsset({ addr: testAccount.addr })).rejects.toThrow('invalid Account reference');
+      await expect(appClient.hasAsset({ addr: testAccount.addr })).rejects.toThrow('invalid Account reference');
     });
 
     test('hasAsset', async () => {
       const { algod, testAccount } = fixture.context;
-      const atc = await v8Client.compose().hasAsset({ addr: testAccount.addr }).atc();
+      const atc = await appClient.compose().hasAsset({ addr: testAccount.addr }).atc();
 
       const packedAtc = await packResources(fixture.context.algod, atc);
 
       await packedAtc.execute(algod, 3);
     });
   });
-});
+};
+
+describe('Resource Packer: AVM8', tests);
