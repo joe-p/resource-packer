@@ -120,6 +120,15 @@ export async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicT
     r.assets?.forEach((a) => {
       group[i].txn.appForeignAssets?.push(Number(a));
     });
+
+    const accounts = group[i].txn.appAccounts?.length || 0;
+    if (accounts > 4) throw Error(`Account reference limit of 4 exceeded in transaction ${i}`);
+
+    const assets = group[i].txn.appForeignAssets?.length || 0;
+    const apps = group[i].txn.appForeignApps?.length || 0;
+    const boxes = group[i].txn.boxes?.length || 0;
+
+    if (accounts + assets + apps + boxes > 8) throw Error(`Resource reference limit of 8 exceeded in transaction ${i}`);
   });
 
   const newAtc = new algosdk.AtomicTransactionComposer();
