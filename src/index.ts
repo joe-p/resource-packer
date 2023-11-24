@@ -29,6 +29,35 @@ export async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicT
   const unnamedResourcesAccessed = await getUnnamedResourcesAccessed(algod, atc);
   const group = atc.buildGroup();
 
+  unnamedResourcesAccessed.txns.forEach((r, i) => {
+    if (r === undefined) return;
+
+    if (r.boxes || r.extraBoxRefs) throw Error('Unexpected boxes at the transaction level');
+    if (r.appLocals) throw Error('Unexpected app local at the transaction level');
+    if (r.assetHoldings) throw Error('Unexpected asset holding at the transaction level');
+
+    r.accounts?.forEach((a) => {
+      group[i].txn.appAccounts?.push(algosdk.decodeAddress(a));
+    });
+
+    r.apps?.forEach((a) => {
+      group[i].txn.appForeignApps?.push(Number(a));
+    });
+
+    r.assets?.forEach((a) => {
+      group[i].txn.appForeignAssets?.push(Number(a));
+    });
+
+    const accounts = group[i].txn.appAccounts?.length || 0;
+    if (accounts > 4) throw Error(`Account reference limit of 4 exceeded in transaction ${i}`);
+
+    const assets = group[i].txn.appForeignAssets?.length || 0;
+    const apps = group[i].txn.appForeignApps?.length || 0;
+    const boxes = group[i].txn.boxes?.length || 0;
+
+    if (accounts + assets + apps + boxes > 8) throw Error(`Resource reference limit of 8 exceeded in transaction ${i}`);
+  });
+
   const findTxnBelowRefLimit = (
     txns: algosdk.TransactionWithSigner[],
     type: 'account' | 'assetHolding' | 'appLocal' | 'other' = 'other'
@@ -101,35 +130,6 @@ export async function packResources(algod: algosdk.Algodv2, atc: algosdk.AtomicT
       }
     }
   }
-
-  unnamedResourcesAccessed.txns.forEach((r, i) => {
-    if (r === undefined) return;
-
-    if (r.boxes || r.extraBoxRefs) throw Error('Unexpected boxes at the transaction level');
-    if (r.appLocals) throw Error('Unexpected app local at the transaction level');
-    if (r.assetHoldings) throw Error('Unexpected asset holding at the transaction level');
-
-    r.accounts?.forEach((a) => {
-      group[i].txn.appAccounts?.push(algosdk.decodeAddress(a));
-    });
-
-    r.apps?.forEach((a) => {
-      group[i].txn.appForeignApps?.push(Number(a));
-    });
-
-    r.assets?.forEach((a) => {
-      group[i].txn.appForeignAssets?.push(Number(a));
-    });
-
-    const accounts = group[i].txn.appAccounts?.length || 0;
-    if (accounts > 4) throw Error(`Account reference limit of 4 exceeded in transaction ${i}`);
-
-    const assets = group[i].txn.appForeignAssets?.length || 0;
-    const apps = group[i].txn.appForeignApps?.length || 0;
-    const boxes = group[i].txn.boxes?.length || 0;
-
-    if (accounts + assets + apps + boxes > 8) throw Error(`Resource reference limit of 8 exceeded in transaction ${i}`);
-  });
 
   const newAtc = new algosdk.AtomicTransactionComposer();
 
