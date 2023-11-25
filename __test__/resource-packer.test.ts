@@ -211,7 +211,7 @@ describe('Resource Packer: Mixed', () => {
     await v8Client.create.createApplication({});
   });
 
-  test.only('same account', async () => {
+  test('same account', async () => {
     const { algod, testAccount } = fixture.context;
     const v8atc = await v8Client.compose().addressBalance({ addr: testAccount.addr }).atc();
     const v9atc = await v9Client.compose().addressBalance({ addr: testAccount.addr }).atc();
@@ -233,6 +233,44 @@ describe('Resource Packer: Mixed', () => {
     const v9CallAccts = packedAtc.buildGroup()[1].txn.appAccounts;
 
     expect(v8CallAccts!.length + v9CallAccts!.length).toBe(1);
+    await packedAtc.execute(algod, 3);
+  });
+
+  test('app account', async () => {
+    const { algod } = fixture.context;
+
+    await v8Client.appClient.fundAppAccount(algokit.microAlgos(300000));
+    await v8Client.bootstrap({}, { sendParams: { fee: algokit.microAlgos(3_000) } });
+
+    const externalAppID = (await v8Client.getGlobalState()).externalAppID!.asBigInt();
+
+    const v8atc = await v8Client
+      .compose()
+      .externalAppCall({}, { sendParams: { fee: algokit.microAlgos(3_000) } })
+      .atc();
+
+    const v9atc = await v9Client
+      .compose()
+      .addressBalance({ addr: algosdk.getApplicationAddress(externalAppID) })
+      .atc();
+
+    const atc = new algosdk.AtomicTransactionComposer();
+
+    const v8Call = v8atc.buildGroup()[0];
+    const v9Call = v9atc.buildGroup()[0];
+
+    v8Call.txn.group = undefined;
+    v9Call.txn.group = undefined;
+
+    atc.addTransaction(v8Call);
+    atc.addTransaction(v9Call);
+
+    const packedAtc = await packResources(fixture.context.algod, atc);
+
+    const v8CallApps = packedAtc.buildGroup()[0].txn.appForeignApps;
+    const v9CallAccts = packedAtc.buildGroup()[1].txn.appAccounts;
+
+    expect(v8CallApps!.length + v9CallAccts!.length).toBe(1);
     await packedAtc.execute(algod, 3);
   });
 });

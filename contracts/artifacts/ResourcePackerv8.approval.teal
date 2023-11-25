@@ -134,11 +134,13 @@ addressBalance:
 	proto 1 0
 
 	// contracts/resource-packer.algo.ts:48
-	// assert(addr.balance)
+	// log(itob(addr.hasBalance))
 	frame_dig -1 // addr: address
 	acct_params_get AcctBalance
-	assert
-	assert
+	swap
+	pop
+	itob
+	log
 	retsub
 
 // smallBox()void

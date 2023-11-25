@@ -45,7 +45,7 @@ class ResourcePackerv8 extends Contract {
   }
 
   addressBalance(addr: Address): void {
-    assert(addr.balance);
+    log(itob(addr.hasBalance));
   }
 
   smallBox(): void {
@@ -107,7 +107,7 @@ class ResourcePackerv9 extends Contract {
   }
 
   addressBalance(addr: Address): void {
-    assert(addr.balance);
+    log(itob(addr.hasBalance));
   }
 
   smallBox(): void {
